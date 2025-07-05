@@ -20,6 +20,7 @@ public class GameState
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
     public GameDifficulty Difficulty { get; set; }
+    public DateTime CreatedAt { get; set; }
     
     public int RemainingMines => TotalMines - FlaggedCells;
     public TimeSpan ElapsedTime => Status == GameStatus.InProgress && StartTime.HasValue 
@@ -37,6 +38,7 @@ public class GameState
         TotalMines = mines;
         Board = new Cell[rows, columns];
         Status = GameStatus.NotStarted;
+        CreatedAt = DateTime.Now;
         InitializeBoard();
     }
     

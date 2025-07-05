@@ -65,17 +65,25 @@
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     
     private Guid _gameKey = Guid.NewGuid();
+    private DateTime _gameCreatedAt = DateTime.MinValue;
     
     protected override void OnInitialized()
     {
         GameService.OnGameStateChanged += OnGameStateChanged;
+        // Set initial game created time
+        if (GameService.CurrentGame != null)
+        {
+            _gameCreatedAt = GameService.CurrentGame.CreatedAt;
+        }
     }
     
     private void OnGameStateChanged()
     {
-        // Generate a new key when a new game starts to force complete re-render
-        if (GameService.CurrentGame?.Status == GameStatus.NotStarted)
+        // Check if this is a new game instance by comparing creation time
+        if (GameService.CurrentGame != null && GameService.CurrentGame.CreatedAt != _gameCreatedAt)
         {
+            // This is a new game, reset everything
+            _gameCreatedAt = GameService.CurrentGame.CreatedAt;
             _gameKey = Guid.NewGuid();
             _hasPlayedWinEffect = false;
         }

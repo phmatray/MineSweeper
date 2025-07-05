@@ -40,7 +40,7 @@
                 
                 @if (GameService.CurrentGame != null)
                 {
-                    <div class="flex justify-center">
+                    <div class="flex justify-center" @key="@GameService.CurrentGame">
                         <GameBoard />
                     </div>
                 }

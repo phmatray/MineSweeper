@@ -36,6 +36,7 @@ public class PersistenceService
                 RevealedCells = gameState.RevealedCells,
                 StartTime = gameState.StartTime,
                 EndTime = gameState.EndTime,
+                CreatedAt = gameState.CreatedAt,
                 BoardData = SerializeBoard(gameState.Board)
             };
             
@@ -137,6 +138,7 @@ public class SavedGameState
     public int RevealedCells { get; set; }
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
+    public DateTime CreatedAt { get; set; }
     public List<CellData> BoardData { get; set; } = new();
 }
 

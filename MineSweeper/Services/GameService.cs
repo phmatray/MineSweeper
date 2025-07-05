@@ -23,7 +23,8 @@ public class GameService
             FlaggedCells = savedState.FlaggedCells,
             RevealedCells = savedState.RevealedCells,
             StartTime = savedState.StartTime,
-            EndTime = savedState.EndTime
+            EndTime = savedState.EndTime,
+            CreatedAt = savedState.CreatedAt
         };
         
         // Restore board state
