@@ -62,4 +62,11 @@ ehthumbs.db
 
 # GitHub Pages build output
 docs/
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Generated CSS
+MineSweeper/wwwroot/css/tailwind.css
 EOF < /dev/null

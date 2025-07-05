@@ -16,4 +16,10 @@
     <PackageReference Include="PublishSPAforGitHubPages.Build" Version="3.0.0" />
   </ItemGroup>
 
+  <!-- Build Tailwind CSS before building the project -->
+  <Target Name="BuildCSS" BeforeTargets="Build">
+    <Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Command="npm run build-css" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
 </Project>

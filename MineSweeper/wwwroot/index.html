@@ -48,8 +48,8 @@
     <link rel="manifest" href="manifest.json">
     
     <!-- Styles -->
+    <link rel="stylesheet" href="css/tailwind.css" />
     <link rel="stylesheet" href="css/app.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://phmatray.github.io/MineSweeper/">
@@ -71,7 +71,7 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="js/particles.js"></script>
-    <script src="service-worker-registration.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script>
         // Handle redirect from 404.html for GitHub Pages SPA support
         (function(l) {

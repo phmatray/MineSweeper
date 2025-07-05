@@ -1,0 +1,12 @@
+{
+  "name": "minesweeper",
+  "version": "1.0.0",
+  "description": "MineSweeper game built with Blazor WebAssembly",
+  "scripts": {
+    "build-css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/tailwind.css --minify",
+    "watch-css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

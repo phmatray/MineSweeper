@@ -3,6 +3,7 @@ const CACHE_NAME = 'minesweeper-v1.0.0';
 const urlsToCache = [
     './',
     './index.html',
+    './css/tailwind.css',
     './css/app.css',
     './js/particles.js',
     './manifest.json',
