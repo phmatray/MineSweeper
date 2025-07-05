@@ -3,10 +3,11 @@
 @using Microsoft.AspNetCore.Components.Web
 @inject GameService GameService
 @inject SoundService SoundService
+@implements IDisposable
 
 @if (GameService.CurrentGame != null)
 {
-    <div class="relative">
+    <div class="relative" @key="@_gameKey">
         <div class="overflow-auto max-h-[70vh] rounded-xl shadow-2xl">
             <div class="game-board" 
                  style="grid-template-columns: repeat(@GameService.CurrentGame.Columns, minmax(0, 1fr));">
@@ -62,6 +63,24 @@
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    
+    private Guid _gameKey = Guid.NewGuid();
+    
+    protected override void OnInitialized()
+    {
+        GameService.OnGameStateChanged += OnGameStateChanged;
+    }
+    
+    private void OnGameStateChanged()
+    {
+        // Generate a new key when a new game starts to force complete re-render
+        if (GameService.CurrentGame?.Status == GameStatus.NotStarted)
+        {
+            _gameKey = Guid.NewGuid();
+            _hasPlayedWinEffect = false;
+        }
+        InvokeAsync(StateHasChanged);
+    }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -165,5 +184,10 @@
     private string FormatTime(TimeSpan time)
     {
         return $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";
+    }
+    
+    public void Dispose()
+    {
+        GameService.OnGameStateChanged -= OnGameStateChanged;
     }
 }
