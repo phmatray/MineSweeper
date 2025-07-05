@@ -11,15 +11,15 @@
                     </a>
                     
                     <div class="hidden md:flex items-center gap-6">
-                        <NavLink href="/" Match="NavLinkMatch.All" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all">
+                        <NavLink href="" Match="NavLinkMatch.All" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all">
                             <span class="text-lg">🎮</span>
                             <span>Play</span>
                         </NavLink>
-                        <NavLink href="/stats" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all">
+                        <NavLink href="stats" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all">
                             <span class="text-lg">📊</span>
                             <span>Statistics</span>
                         </NavLink>
-                        <NavLink href="/achievements" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all">
+                        <NavLink href="achievements" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all">
                             <span class="text-lg">🏆</span>
                             <span>Achievements</span>
                         </NavLink>
@@ -36,15 +36,15 @@
             @if (_showMobileMenu)
             {
                 <div class="md:hidden pb-4 space-y-2">
-                    <NavLink href="/" Match="NavLinkMatch.All" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all w-full" @onclick="CloseMobileMenu">
+                    <NavLink href="" Match="NavLinkMatch.All" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all w-full" @onclick="CloseMobileMenu">
                         <span class="text-lg">🎮</span>
                         <span>Play</span>
                     </NavLink>
-                    <NavLink href="/stats" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all w-full" @onclick="CloseMobileMenu">
+                    <NavLink href="stats" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all w-full" @onclick="CloseMobileMenu">
                         <span class="text-lg">📊</span>
                         <span>Statistics</span>
                     </NavLink>
-                    <NavLink href="/achievements" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all w-full" @onclick="CloseMobileMenu">
+                    <NavLink href="achievements" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all w-full" @onclick="CloseMobileMenu">
                         <span class="text-lg">🏆</span>
                         <span>Achievements</span>
                     </NavLink>
