@@ -7,7 +7,7 @@
 
 @if (GameService.CurrentGame != null)
 {
-    <div class="relative" @key="@_gameKey">
+    <div class="relative">
         <div class="overflow-auto max-h-[70vh] rounded-xl shadow-2xl">
             <div class="game-board" 
                  style="grid-template-columns: repeat(@GameService.CurrentGame.Columns, minmax(0, 1fr));">
@@ -36,7 +36,9 @@
             </div>
         </div>
         
-        @if (GameService.CurrentGame.Status == GameStatus.Won || GameService.CurrentGame.Status == GameStatus.Lost)
+        @if (GameService.CurrentGame != null && 
+             GameService.CurrentGame.CreatedAt == _currentGameCreatedAt &&
+             (GameService.CurrentGame.Status == GameStatus.Won || GameService.CurrentGame.Status == GameStatus.Lost))
         {
             <div class="game-over-overlay">
                 <div class="game-over-content">
@@ -64,28 +66,33 @@
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     
-    private Guid _gameKey = Guid.NewGuid();
-    private DateTime _gameCreatedAt = DateTime.MinValue;
+    private DateTime _currentGameCreatedAt = DateTime.MinValue;
     
     protected override void OnInitialized()
     {
         GameService.OnGameStateChanged += OnGameStateChanged;
-        // Set initial game created time
         if (GameService.CurrentGame != null)
         {
-            _gameCreatedAt = GameService.CurrentGame.CreatedAt;
+            _currentGameCreatedAt = GameService.CurrentGame.CreatedAt;
+        }
+    }
+    
+    protected override void OnParametersSet()
+    {
+        // Update the current game reference when parameters change
+        if (GameService.CurrentGame != null && GameService.CurrentGame.CreatedAt != _currentGameCreatedAt)
+        {
+            _currentGameCreatedAt = GameService.CurrentGame.CreatedAt;
+            _hasPlayedWinEffect = false;
         }
     }
     
     private void OnGameStateChanged()
     {
-        // Check if this is a new game instance by comparing creation time
-        if (GameService.CurrentGame != null && GameService.CurrentGame.CreatedAt != _gameCreatedAt)
+        // Update the current game reference
+        if (GameService.CurrentGame != null)
         {
-            // This is a new game, reset everything
-            _gameCreatedAt = GameService.CurrentGame.CreatedAt;
-            _gameKey = Guid.NewGuid();
-            _hasPlayedWinEffect = false;
+            _currentGameCreatedAt = GameService.CurrentGame.CreatedAt;
         }
         InvokeAsync(StateHasChanged);
     }

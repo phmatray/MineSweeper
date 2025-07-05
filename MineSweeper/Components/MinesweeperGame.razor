@@ -40,7 +40,7 @@
                 
                 @if (GameService.CurrentGame != null)
                 {
-                    <div class="flex justify-center" @key="@GameService.CurrentGame">
+                    <div class="flex justify-center" @key="@GameService.CurrentGame.CreatedAt">
                         <GameBoard />
                     </div>
                 }
@@ -136,6 +136,8 @@
     {
         GameService.NewGame(difficulty);
         await SoundService.PlayStartAsync();
+        // Force immediate state update
+        await InvokeAsync(StateHasChanged);
     }
     
     private void ResetCurrentGame()
