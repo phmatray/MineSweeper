@@ -38,7 +38,7 @@
                     <GameStats OnReset="ResetCurrentGame" />
                 </div>
                 
-                @if (GameService.CurrentGame != null)
+                @if (GameService.CurrentGame != null && !_isLoadingNewGame)
                 {
                     <div class="flex justify-center" @key="@GameService.CurrentGame.CreatedAt">
                         <GameBoard />
@@ -132,11 +132,23 @@
         }
     }
     
+    private bool _isLoadingNewGame = false;
+    
     private async void StartNewGame(GameDifficulty difficulty)
     {
+        // Set loading state to force GameBoard to unmount
+        _isLoadingNewGame = true;
+        StateHasChanged();
+        
+        // Small delay to ensure the component is unmounted
+        await Task.Delay(50);
+        
+        // Create new game
         GameService.NewGame(difficulty);
         await SoundService.PlayStartAsync();
-        // Force immediate state update
+        
+        // Clear loading state to remount GameBoard
+        _isLoadingNewGame = false;
         await InvokeAsync(StateHasChanged);
     }
     
