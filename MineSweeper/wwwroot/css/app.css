@@ -240,25 +240,20 @@ code {
     }
 }
 
-/* Enhanced reveal animation for cells */
+/* Enhanced reveal animation for cells - optimized for performance */
 @keyframes cell-reveal {
     0% {
-        transform: scale(0.8) rotateY(180deg);
-        opacity: 0;
-        background-color: #374151;
-    }
-    50% {
-        transform: scale(1.1) rotateY(90deg);
-        background-color: #4b5563;
+        transform: scale(0.95);
+        opacity: 0.7;
     }
     100% {
-        transform: scale(1) rotateY(0deg);
+        transform: scale(1);
         opacity: 1;
     }
 }
 
 .animate-cell-reveal {
-    animation: cell-reveal 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation: cell-reveal 0.15s ease-out;
 }
 
 /* Win animation */
@@ -368,7 +363,7 @@ code {
 /* ===== GAME CELLS ===== */
 .cell-button {
     border-radius: 0.25rem;
-    transition: all 150ms;
+    transition: transform 100ms ease-out;
     transform: scale(1);
     display: flex;
     align-items: center;
@@ -377,6 +372,9 @@ code {
     font-size: 0.875rem;
     width: 1.75rem;
     height: 1.75rem;
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 @media (min-width: 768px) {
@@ -423,7 +421,7 @@ code {
     background-color: #1f2937;
     border: 1px solid #374151;
     box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-    animation: cell-reveal 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation: cell-reveal 0.15s ease-out;
 }
 
 /* Number colors */

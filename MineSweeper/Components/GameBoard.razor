@@ -126,6 +126,7 @@
         var previousStatus = GameService.CurrentGame?.Status;
         var cell = GameService.CurrentGame?.Board[row, col];
         var wasMine = cell?.IsMine ?? false;
+        var wasRevealed = cell?.IsRevealed ?? false;
         
         GameService.RevealCell(row, col);
         
@@ -134,10 +135,15 @@
         {
             await SoundService.PlayClickAsync();
             
-            // Add sparkle effect for successful reveal
-            if (!wasMine && GameService.CurrentGame?.Status == GameStatus.InProgress)
+            // Only add sparkle effect for single cell reveals (not batch reveals)
+            if (!wasMine && !wasRevealed && GameService.CurrentGame?.Status == GameStatus.InProgress)
             {
-                await JSRuntime.InvokeVoidAsync("ParticleEffects.createSparkle", e.ClientX, e.ClientY);
+                var newCell = GameService.CurrentGame?.Board[row, col];
+                if (newCell != null && newCell.AdjacentMines > 0)
+                {
+                    // Only sparkle for cells with numbers (not empty cells that trigger batch reveal)
+                    await JSRuntime.InvokeVoidAsync("ParticleEffects.createSparkle", e.ClientX, e.ClientY);
+                }
             }
         }
         

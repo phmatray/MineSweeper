@@ -132,10 +132,28 @@ public class GameService
         
         if (cell.IsRevealed || cell.IsFlagged) return;
         
-        cell.IsRevealed = true;
-        CurrentGame.RevealedCells++;
+        // Use batch reveal for better performance
+        var cellsToReveal = new List<(int row, int col)>();
+        CollectCellsToReveal(row, col, cellsToReveal, new HashSet<(int, int)>());
         
-        if (cell.IsMine)
+        // Reveal all cells at once
+        bool hitMine = false;
+        foreach (var (r, c) in cellsToReveal)
+        {
+            var cellToReveal = CurrentGame.Board[r, c];
+            if (!cellToReveal.IsRevealed && !cellToReveal.IsFlagged)
+            {
+                cellToReveal.IsRevealed = true;
+                CurrentGame.RevealedCells++;
+                
+                if (cellToReveal.IsMine)
+                {
+                    hitMine = true;
+                }
+            }
+        }
+        
+        if (hitMine)
         {
             CurrentGame.Status = GameStatus.Lost;
             CurrentGame.EndTime = DateTime.Now;
@@ -143,35 +161,40 @@ public class GameService
         }
         else
         {
-            if (cell.AdjacentMines == 0)
-            {
-                RevealAdjacentCells(row, col);
-            }
-            
             CheckWinCondition();
         }
         
+        // Single state change notification after all cells are revealed
         OnGameStateChanged?.Invoke();
     }
     
-    private void RevealAdjacentCells(int row, int col)
+    private void CollectCellsToReveal(int row, int col, List<(int, int)> cellsToReveal, HashSet<(int, int)> visited)
     {
-        for (int dr = -1; dr <= 1; dr++)
+        if (!IsValidCell(row, col) || visited.Contains((row, col)))
+            return;
+            
+        visited.Add((row, col));
+        var cell = CurrentGame!.Board[row, col];
+        
+        if (cell.IsRevealed || cell.IsFlagged || cell.IsMine)
+            return;
+            
+        cellsToReveal.Add((row, col));
+        
+        // If this cell has no adjacent mines, collect its neighbors
+        if (cell.AdjacentMines == 0)
         {
-            for (int dc = -1; dc <= 1; dc++)
+            for (int dr = -1; dr <= 1; dr++)
             {
-                if (dr == 0 && dc == 0) continue;
-                
-                int newRow = row + dr;
-                int newCol = col + dc;
-                
-                if (IsValidCell(newRow, newCol))
+                for (int dc = -1; dc <= 1; dc++)
                 {
-                    RevealCell(newRow, newCol);
+                    if (dr == 0 && dc == 0) continue;
+                    CollectCellsToReveal(row + dr, col + dc, cellsToReveal, visited);
                 }
             }
         }
     }
+    
     
     private void RevealAllMines()
     {
@@ -251,6 +274,9 @@ public class GameService
         if (!cell.IsRevealed || cell.AdjacentMines == 0) return;
         
         int flaggedCount = 0;
+        var cellsToCheck = new List<(int row, int col)>();
+        
+        // Count flags and collect cells to potentially reveal
         for (int dr = -1; dr <= 1; dr++)
         {
             for (int dc = -1; dc <= 1; dc++)
@@ -260,34 +286,61 @@ public class GameService
                 int newRow = row + dr;
                 int newCol = col + dc;
                 
-                if (IsValidCell(newRow, newCol) && CurrentGame.Board[newRow, newCol].IsFlagged)
+                if (IsValidCell(newRow, newCol))
                 {
-                    flaggedCount++;
+                    var adjacentCell = CurrentGame.Board[newRow, newCol];
+                    if (adjacentCell.IsFlagged)
+                    {
+                        flaggedCount++;
+                    }
+                    else if (!adjacentCell.IsRevealed)
+                    {
+                        cellsToCheck.Add((newRow, newCol));
+                    }
                 }
             }
         }
         
-        if (flaggedCount == cell.AdjacentMines)
+        if (flaggedCount == cell.AdjacentMines && cellsToCheck.Count > 0)
         {
-            for (int dr = -1; dr <= 1; dr++)
+            // Batch reveal all adjacent unflagged cells
+            var allCellsToReveal = new List<(int row, int col)>();
+            var visited = new HashSet<(int, int)>();
+            
+            foreach (var (r, c) in cellsToCheck)
             {
-                for (int dc = -1; dc <= 1; dc++)
+                CollectCellsToReveal(r, c, allCellsToReveal, visited);
+            }
+            
+            // Reveal all cells at once
+            bool hitMine = false;
+            foreach (var (r, c) in allCellsToReveal)
+            {
+                var cellToReveal = CurrentGame.Board[r, c];
+                if (!cellToReveal.IsRevealed && !cellToReveal.IsFlagged)
                 {
-                    if (dr == 0 && dc == 0) continue;
+                    cellToReveal.IsRevealed = true;
+                    CurrentGame.RevealedCells++;
                     
-                    int newRow = row + dr;
-                    int newCol = col + dc;
-                    
-                    if (IsValidCell(newRow, newCol))
+                    if (cellToReveal.IsMine)
                     {
-                        var adjacentCell = CurrentGame.Board[newRow, newCol];
-                        if (!adjacentCell.IsRevealed && !adjacentCell.IsFlagged)
-                        {
-                            RevealCell(newRow, newCol);
-                        }
+                        hitMine = true;
                     }
                 }
             }
+            
+            if (hitMine)
+            {
+                CurrentGame.Status = GameStatus.Lost;
+                CurrentGame.EndTime = DateTime.Now;
+                RevealAllMines();
+            }
+            else
+            {
+                CheckWinCondition();
+            }
+            
+            OnGameStateChanged?.Invoke();
         }
     }
 }
