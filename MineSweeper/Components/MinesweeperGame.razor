@@ -4,6 +4,8 @@
 @inject SoundService SoundService
 @inject AchievementService AchievementService
 @inject PersistenceService PersistenceService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 @implements IDisposable
 
 <div class="p-4">
@@ -38,7 +40,7 @@
                     <GameStats OnReset="ResetCurrentGame" />
                 </div>
                 
-                @if (GameService.CurrentGame != null && !_isLoadingNewGame)
+                @if (GameService.CurrentGame != null)
                 {
                     <div class="flex justify-center" @key="@GameService.CurrentGame.CreatedAt">
                         <GameBoard />
@@ -95,6 +97,23 @@
         SoundService.OnSoundToggled += OnSoundToggled;
         _timer = new System.Threading.Timer(_ => InvokeAsync(StateHasChanged), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
         
+        // Check if we have a pending game to start after reload
+        try
+        {
+            var pendingDifficulty = await JSRuntime.InvokeAsync<string?>("sessionStorage.getItem", "pendingGameDifficulty");
+            if (!string.IsNullOrEmpty(pendingDifficulty))
+            {
+                await JSRuntime.InvokeVoidAsync("sessionStorage.removeItem", "pendingGameDifficulty");
+                if (Enum.TryParse<GameDifficulty>(pendingDifficulty, out var difficulty))
+                {
+                    GameService.NewGame(difficulty);
+                    await SoundService.PlayStartAsync();
+                    return;
+                }
+            }
+        }
+        catch { }
+        
         // Load saved game if exists
         var savedGame = await PersistenceService.LoadGameStateAsync();
         if (savedGame != null && savedGame.Status == GameStatus.InProgress)
@@ -132,24 +151,23 @@
         }
     }
     
-    private bool _isLoadingNewGame = false;
-    
     private async void StartNewGame(GameDifficulty difficulty)
     {
-        // Set loading state to force GameBoard to unmount
-        _isLoadingNewGame = true;
-        StateHasChanged();
+        // Check if we need to force reload (when game is over)
+        if (GameService.CurrentGame != null && 
+            (GameService.CurrentGame.Status == GameStatus.Won || GameService.CurrentGame.Status == GameStatus.Lost))
+        {
+            // Save the difficulty to start after reload
+            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "pendingGameDifficulty", difficulty.ToString());
+            
+            // Force page reload
+            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+            return;
+        }
         
-        // Small delay to ensure the component is unmounted
-        await Task.Delay(50);
-        
-        // Create new game
+        // Normal new game start (first game or resetting during play)
         GameService.NewGame(difficulty);
         await SoundService.PlayStartAsync();
-        
-        // Clear loading state to remount GameBoard
-        _isLoadingNewGame = false;
-        await InvokeAsync(StateHasChanged);
     }
     
     private void ResetCurrentGame()
