@@ -1,0 +1,39 @@
+{
+  "name": "MineSweeper - Classic Puzzle Game",
+  "short_name": "MineSweeper",
+  "description": "A modern, feature-rich implementation of the classic MineSweeper game with achievements, statistics, and beautiful animations.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#2563eb",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "puzzle"],
+  "screenshots": [
+    {
+      "src": "screenshot-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Game in progress"
+    },
+    {
+      "src": "screenshot-2.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Achievements page"
+    }
+  ]
+}

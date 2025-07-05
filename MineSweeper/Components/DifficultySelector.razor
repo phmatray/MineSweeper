@@ -1,0 +1,63 @@
+@using MineSweeper.Models
+
+<div class="flex flex-wrap justify-center gap-2">
+    @foreach (var difficulty in Enum.GetValues<GameDifficulty>())
+    {
+        <button @onclick="() => SelectDifficulty(difficulty)" 
+                class="@GetDifficultyClass(difficulty) px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 hover:shadow-lg flex items-center gap-2">
+            <span class="text-lg">@GetDifficultyIcon(difficulty)</span>
+            <span>@difficulty</span>
+            <span class="text-xs opacity-75">@GetDifficultyDescription(difficulty)</span>
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback<GameDifficulty> OnDifficultySelected { get; set; }
+    [Parameter] public GameDifficulty? CurrentDifficulty { get; set; }
+    
+    private async Task SelectDifficulty(GameDifficulty difficulty)
+    {
+        await OnDifficultySelected.InvokeAsync(difficulty);
+    }
+    
+    private string GetDifficultyClass(GameDifficulty difficulty)
+    {
+        var baseClass = "text-white shadow-md ";
+        
+        if (CurrentDifficulty == difficulty)
+        {
+            baseClass += "ring-2 ring-white ring-offset-2 ring-offset-gray-800 ";
+        }
+        
+        return difficulty switch
+        {
+            GameDifficulty.Beginner => baseClass + "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700",
+            GameDifficulty.Intermediate => baseClass + "bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700",
+            GameDifficulty.Expert => baseClass + "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700",
+            _ => baseClass + "bg-gray-600"
+        };
+    }
+    
+    private string GetDifficultyIcon(GameDifficulty difficulty)
+    {
+        return difficulty switch
+        {
+            GameDifficulty.Beginner => "🌱",
+            GameDifficulty.Intermediate => "🔥",
+            GameDifficulty.Expert => "💀",
+            _ => "❓"
+        };
+    }
+    
+    private string GetDifficultyDescription(GameDifficulty difficulty)
+    {
+        return difficulty switch
+        {
+            GameDifficulty.Beginner => "(9×9, 10 💣)",
+            GameDifficulty.Intermediate => "(16×16, 40 💣)",
+            GameDifficulty.Expert => "(16×30, 99 💣)",
+            _ => ""
+        };
+    }
+}

@@ -1,0 +1,56 @@
+@using MineSweeper.Models
+@using MineSweeper.Services
+@inject GameService GameService
+
+@if (GameService.CurrentGame != null)
+{
+    <div class="flex flex-wrap items-center justify-center gap-4">
+        <div class="bg-gray-900 px-6 py-3 rounded-xl flex items-center gap-3 shadow-inner">
+            <span class="text-2xl">🚩</span>
+            <div class="text-center">
+                <div class="text-2xl font-mono font-bold text-white">@GameService.CurrentGame.RemainingMines</div>
+                <div class="text-xs text-gray-400 uppercase">Mines</div>
+            </div>
+        </div>
+        
+        <button @onclick="Reset" 
+                class="text-5xl hover:scale-110 transition-transform active:scale-95"
+                title="New game">
+            @GetFaceEmoji()
+        </button>
+        
+        <div class="bg-gray-900 px-6 py-3 rounded-xl flex items-center gap-3 shadow-inner">
+            <span class="text-2xl">⏱️</span>
+            <div class="text-center">
+                <div class="text-2xl font-mono font-bold text-white">@FormatTime(GameService.CurrentGame.ElapsedTime)</div>
+                <div class="text-xs text-gray-400 uppercase">Time</div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback OnReset { get; set; }
+    
+    private async Task Reset()
+    {
+        await OnReset.InvokeAsync();
+    }
+    
+    private string GetFaceEmoji()
+    {
+        if (GameService.CurrentGame == null) return "😊";
+        
+        return GameService.CurrentGame.Status switch
+        {
+            GameStatus.Won => "😎",
+            GameStatus.Lost => "😵",
+            _ => "😊"
+        };
+    }
+    
+    private string FormatTime(TimeSpan time)
+    {
+        return $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";
+    }
+}

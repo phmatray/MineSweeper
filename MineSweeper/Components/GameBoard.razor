@@ -1,0 +1,169 @@
+@using MineSweeper.Models
+@using MineSweeper.Services
+@using Microsoft.AspNetCore.Components.Web
+@inject GameService GameService
+@inject SoundService SoundService
+
+@if (GameService.CurrentGame != null)
+{
+    <div class="relative">
+        <div class="overflow-auto max-h-[70vh] rounded-xl shadow-2xl">
+            <div class="game-board" 
+                 style="grid-template-columns: repeat(@GameService.CurrentGame.Columns, minmax(0, 1fr));">
+                @for (int row = 0; row < GameService.CurrentGame.Rows; row++)
+                {
+                    @for (int col = 0; col < GameService.CurrentGame.Columns; col++)
+                    {
+                        var r = row;
+                        var c = col;
+                        var cell = GameService.CurrentGame.Board[r, c];
+                        
+                        <button @key="@(r * GameService.CurrentGame.Columns + c)"
+                                @onclick="(e) => HandleCellClick(r, c, e)"
+                                @oncontextmenu="(e) => HandleRightClick(r, c, e)"
+                                @oncontextmenu:preventDefault="true"
+                                @ondblclick="() => HandleDoubleClick(r, c)"
+                                class="cell-button @GetCellClass(cell)"
+                                disabled="@(GameService.CurrentGame.Status != GameStatus.InProgress && GameService.CurrentGame.Status != GameStatus.NotStarted)"
+                                id="cell-@r-@c">
+                            <span class="@(cell.IsFlagged && !cell.IsRevealed ? "flag-animation" : "")">
+                                @GetCellContent(cell)
+                            </span>
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+        
+        @if (GameService.CurrentGame.Status == GameStatus.Won || GameService.CurrentGame.Status == GameStatus.Lost)
+        {
+            <div class="game-over-overlay">
+                <div class="game-over-content">
+                    @if (GameService.CurrentGame.Status == GameStatus.Won)
+                    {
+                        <div class="animate-bounce">
+                            <p class="text-4xl font-bold text-green-400 mb-2">Victory! 🎉</p>
+                            <p class="text-xl text-white">Time: @FormatTime(GameService.CurrentGame.ElapsedTime)</p>
+                            <p class="text-sm text-gray-400 mt-2">You found all mines!</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="animate-pulse">
+                            <p class="text-4xl font-bold text-red-400 mb-2">Game Over 💥</p>
+                            <p class="text-lg text-white">Better luck next time!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("ParticleEffects.init");
+        }
+        
+        // Check for game over states and trigger effects
+        if (GameService.CurrentGame != null)
+        {
+            if (GameService.CurrentGame.Status == GameStatus.Won && !_hasPlayedWinEffect)
+            {
+                _hasPlayedWinEffect = true;
+                await JSRuntime.InvokeVoidAsync("ParticleEffects.createConfetti");
+            }
+            else if (GameService.CurrentGame.Status == GameStatus.InProgress || GameService.CurrentGame.Status == GameStatus.NotStarted)
+            {
+                _hasPlayedWinEffect = false;
+            }
+        }
+    }
+    
+    private bool _hasPlayedWinEffect = false;
+    
+    private async void HandleCellClick(int row, int col, MouseEventArgs e)
+    {
+        var previousStatus = GameService.CurrentGame?.Status;
+        var cell = GameService.CurrentGame?.Board[row, col];
+        var wasMine = cell?.IsMine ?? false;
+        
+        GameService.RevealCell(row, col);
+        
+        if (GameService.CurrentGame?.Status == GameStatus.InProgress || 
+            (previousStatus == GameStatus.NotStarted && GameService.CurrentGame?.Status == GameStatus.InProgress))
+        {
+            await SoundService.PlayClickAsync();
+            
+            // Add sparkle effect for successful reveal
+            if (!wasMine && GameService.CurrentGame?.Status == GameStatus.InProgress)
+            {
+                await JSRuntime.InvokeVoidAsync("ParticleEffects.createSparkle", e.ClientX, e.ClientY);
+            }
+        }
+        
+        // Add explosion effect if mine was hit
+        if (wasMine && GameService.CurrentGame?.Status == GameStatus.Lost)
+        {
+            await JSRuntime.InvokeVoidAsync("ParticleEffects.createExplosion", e.ClientX, e.ClientY);
+        }
+    }
+    
+    private async void HandleRightClick(int row, int col, MouseEventArgs e)
+    {
+        GameService.ToggleFlag(row, col);
+        await SoundService.PlayClickAsync();
+    }
+    
+    private async void HandleDoubleClick(int row, int col)
+    {
+        GameService.RevealAdjacentIfSafe(row, col);
+        await SoundService.PlayClickAsync();
+    }
+    
+    private string GetCellClass(Cell cell)
+    {
+        if (!cell.IsRevealed)
+        {
+            return "cell-unrevealed";
+        }
+        
+        if (cell.IsMine)
+        {
+            return "cell-mine";
+        }
+        
+        var numberClass = cell.AdjacentMines > 0 ? $" mine-count-{cell.AdjacentMines}" : "";
+        return $"cell-revealed{numberClass}";
+    }
+    
+    private string GetCellContent(Cell cell)
+    {
+        if (!cell.IsRevealed && cell.IsFlagged)
+        {
+            return "🚩";
+        }
+        
+        if (!cell.IsRevealed)
+        {
+            return "";
+        }
+        
+        if (cell.IsMine)
+        {
+            return "💣";
+        }
+        
+        return cell.AdjacentMines > 0 ? cell.AdjacentMines.ToString() : "";
+    }
+    
+    private string FormatTime(TimeSpan time)
+    {
+        return $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";
+    }
+}

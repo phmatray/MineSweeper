@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Sitemap: https://phmatray.github.io/MineSweeper/sitemap.xml
+
+# Disallow access to framework files
+User-agent: *
+Disallow: /_framework/
+Disallow: /_content/

@@ -3,13 +3,56 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MineSweeper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>MineSweeper - Classic Puzzle Game</title>
     <base href="/" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Play MineSweeper online - A modern, feature-rich implementation of the classic puzzle game with achievements, statistics, and beautiful animations. Free to play!">
+    <meta name="keywords" content="minesweeper, puzzle game, classic game, browser game, free game, online game, logic game">
+    <meta name="author" content="phmatray">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="MineSweeper - Classic Puzzle Game">
+    <meta property="og:description" content="A modern implementation of the classic MineSweeper game with achievements and statistics.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://phmatray.github.io/MineSweeper/">
+    <meta property="og:image" content="https://phmatray.github.io/MineSweeper/icon-512.png">
+    <meta property="og:site_name" content="MineSweeper">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MineSweeper - Classic Puzzle Game">
+    <meta name="twitter:description" content="Play the classic MineSweeper game with modern features and achievements.">
+    <meta name="twitter:image" content="https://phmatray.github.io/MineSweeper/icon-512.png">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MineSweeper">
+    <meta name="application-name" content="MineSweeper">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="msapplication-starturl" content="./">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#2563eb">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="css/app.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- If you add any scoped CSS files, uncomment the following to load them
-    <link href="MineSweeper.styles.css" rel="stylesheet" /> -->
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://phmatray.github.io/MineSweeper/">
 </head>
 
 <body>
@@ -27,6 +70,55 @@
         <span class="dismiss">🗙</span>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="service-worker-registration.js"></script>
+    <script>
+        // Handle redirect from 404.html for GitHub Pages SPA support
+        (function(l) {
+            if (l.search) {
+                var q = {};
+                l.search.slice(1).split('&').forEach(function(v) {
+                    var a = v.split('=');
+                    q[a[0]] = a.slice(1).join('=').replace(/~and~/g, '&');
+                });
+                if (q.p !== undefined) {
+                    window.history.replaceState(null, null,
+                        l.pathname.slice(0, -1) + (q.p || '') +
+                        (q.q ? ('?' + q.q) : '') +
+                        l.hash
+                    );
+                }
+            }
+        }(window.location));
+    </script>
+    <script>
+        // Audio playback functions
+        window.playSound = function(soundPath) {
+            const audio = new Audio(soundPath);
+            audio.volume = 0.5;
+            audio.play().catch(error => {
+                console.warn('Audio playback failed:', error);
+            });
+        };
+
+        // Preload sounds for better performance
+        window.preloadSounds = function() {
+            const sounds = [
+                'sounds/click.wav',
+                'sounds/start.wav',
+                'sounds/win.wav',
+                'sounds/lose_minesweeper.wav'
+            ];
+            
+            sounds.forEach(sound => {
+                const audio = new Audio(sound);
+                audio.preload = 'auto';
+            });
+        };
+
+        // Call preload when the page loads
+        window.addEventListener('load', window.preloadSounds);
+    </script>
 </body>
 
 </html>

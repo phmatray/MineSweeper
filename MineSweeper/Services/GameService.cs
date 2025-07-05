@@ -15,6 +15,30 @@ public class GameService
         OnGameStateChanged?.Invoke();
     }
     
+    public void LoadGame(SavedGameState savedState)
+    {
+        CurrentGame = new GameState(savedState.Difficulty)
+        {
+            Status = savedState.Status,
+            FlaggedCells = savedState.FlaggedCells,
+            RevealedCells = savedState.RevealedCells,
+            StartTime = savedState.StartTime,
+            EndTime = savedState.EndTime
+        };
+        
+        // Restore board state
+        foreach (var cellData in savedState.BoardData)
+        {
+            var cell = CurrentGame.Board[cellData.Row, cellData.Col];
+            cell.IsMine = cellData.IsMine;
+            cell.IsRevealed = cellData.IsRevealed;
+            cell.IsFlagged = cellData.IsFlagged;
+            cell.AdjacentMines = cellData.AdjacentMines;
+        }
+        
+        OnGameStateChanged?.Invoke();
+    }
+    
     public void StartGame(int firstRow, int firstCol)
     {
         if (CurrentGame == null || CurrentGame.Status != GameStatus.NotStarted)

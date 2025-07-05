@@ -1,0 +1,240 @@
+@page "/stats"
+@using MineSweeper.Models
+@using MineSweeper.Services
+@inject AchievementService AchievementService
+@implements IDisposable
+
+<PageTitle>Statistics - MineSweeper</PageTitle>
+
+<div class="max-w-6xl mx-auto p-4">
+    <div class="bg-gray-800 rounded-2xl shadow-2xl p-6">
+        <h1 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+            <span class="text-4xl">📊</span>
+            Game Statistics
+        </h1>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Overall Performance -->
+            <div class="bg-gray-700 rounded-xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span>🎯</span>
+                    Overall Performance
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">Total Games</span>
+                        <span class="text-2xl font-bold text-white">@AchievementService.Statistics.TotalGamesPlayed</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">Wins</span>
+                        <span class="text-2xl font-bold text-green-400">@AchievementService.Statistics.TotalWins</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">Losses</span>
+                        <span class="text-2xl font-bold text-red-400">@AchievementService.Statistics.TotalLosses</span>
+                    </div>
+                    <div class="pt-3 border-t border-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Win Rate</span>
+                            <span class="text-2xl font-bold @GetWinRateColor()">
+                                @AchievementService.Statistics.WinRate.ToString("F1")%
+                            </span>
+                        </div>
+                        <div class="mt-2 bg-gray-800 rounded-full h-3 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-500"
+                                 style="width: @AchievementService.Statistics.WinRate%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Streaks -->
+            <div class="bg-gray-700 rounded-xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span>🔥</span>
+                    Win Streaks
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">Current Streak</span>
+                        <span class="text-3xl font-bold text-yellow-400">@AchievementService.Statistics.CurrentWinStreak</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">Best Streak</span>
+                        <span class="text-3xl font-bold text-orange-400">@AchievementService.Statistics.BestWinStreak</span>
+                    </div>
+                    <div class="pt-3 border-t border-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Total Play Time</span>
+                            <span class="text-lg font-mono text-white">@FormatPlayTime(AchievementService.Statistics.TotalPlayTime)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Best Times -->
+            <div class="bg-gray-700 rounded-xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span>⏱️</span>
+                    Best Times
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300 flex items-center gap-2">
+                            <span class="text-green-400">🌱</span>
+                            Beginner
+                        </span>
+                        <span class="font-mono text-xl text-white">
+                            @(AchievementService.Statistics.BeginnerStats.BestTime.HasValue 
+                                ? FormatTime(AchievementService.Statistics.BeginnerStats.BestTime.Value) 
+                                : "--:--")
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300 flex items-center gap-2">
+                            <span class="text-yellow-400">🔥</span>
+                            Intermediate
+                        </span>
+                        <span class="font-mono text-xl text-white">
+                            @(AchievementService.Statistics.IntermediateStats.BestTime.HasValue 
+                                ? FormatTime(AchievementService.Statistics.IntermediateStats.BestTime.Value) 
+                                : "--:--")
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300 flex items-center gap-2">
+                            <span class="text-red-400">💀</span>
+                            Expert
+                        </span>
+                        <span class="font-mono text-xl text-white">
+                            @(AchievementService.Statistics.ExpertStats.BestTime.HasValue 
+                                ? FormatTime(AchievementService.Statistics.ExpertStats.BestTime.Value) 
+                                : "--:--")
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Difficulty Breakdown -->
+        <div class="mt-6 grid md:grid-cols-3 gap-6">
+            @foreach (var (difficulty, stats, color, icon) in GetDifficultyData())
+            {
+                <div class="bg-gray-700 rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                        <span class="text-2xl">@icon</span>
+                        @difficulty
+                    </h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Games Played</span>
+                            <span class="text-white font-semibold">@stats.GamesPlayed</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Games Won</span>
+                            <span class="text-white font-semibold">@stats.GamesWon</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Win Rate</span>
+                            <span class="text-white font-semibold">
+                                @(stats.GamesPlayed > 0 ? $"{(double)stats.GamesWon / stats.GamesPlayed * 100:F1}%" : "0%")
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Average Time</span>
+                            <span class="text-white font-mono">
+                                @(stats.AverageTime.HasValue ? FormatTime(stats.AverageTime.Value) : "--:--")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <!-- Fun Facts -->
+        <div class="mt-6 bg-gray-700 rounded-xl p-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <span>🎲</span>
+                Fun Facts
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <p class="text-3xl font-bold text-blue-400">@AchievementService.Statistics.TotalCellsRevealed</p>
+                    <p class="text-sm text-gray-400">Cells Revealed</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl font-bold text-purple-400">@AchievementService.Statistics.TotalFlagsPlaced</p>
+                    <p class="text-sm text-gray-400">Flags Placed</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl font-bold text-green-400">@AchievementService.Statistics.LargestFirstClick</p>
+                    <p class="text-sm text-gray-400">Largest First Click</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl font-bold text-yellow-400">@AchievementService.Statistics.GamesWonWithoutFlags</p>
+                    <p class="text-sm text-gray-400">No-Flag Wins</p>
+                </div>
+            </div>
+        </div>
+        
+        @if (AchievementService.Statistics.LastPlayedAt.HasValue)
+        {
+            <p class="text-center text-gray-500 text-sm mt-4">
+                Last played: @AchievementService.Statistics.LastPlayedAt.Value.ToString("MMM d, yyyy h:mm tt")
+            </p>
+        }
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        AchievementService.OnStatisticsUpdated += OnStatisticsUpdated;
+    }
+    
+    private void OnStatisticsUpdated()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+    
+    private string GetWinRateColor()
+    {
+        return AchievementService.Statistics.WinRate switch
+        {
+            >= 75 => "text-green-400",
+            >= 50 => "text-yellow-400",
+            >= 25 => "text-orange-400",
+            _ => "text-red-400"
+        };
+    }
+    
+    private List<(string Name, DifficultyStatistics Stats, string Color, string Icon)> GetDifficultyData()
+    {
+        return new()
+        {
+            ("Beginner", AchievementService.Statistics.BeginnerStats, "green", "🌱"),
+            ("Intermediate", AchievementService.Statistics.IntermediateStats, "yellow", "🔥"),
+            ("Expert", AchievementService.Statistics.ExpertStats, "red", "💀")
+        };
+    }
+    
+    private string FormatTime(TimeSpan time)
+    {
+        return $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";
+    }
+    
+    private string FormatPlayTime(TimeSpan time)
+    {
+        if (time.TotalDays >= 1)
+            return $"{(int)time.TotalDays}d {time.Hours}h";
+        else if (time.TotalHours >= 1)
+            return $"{(int)time.TotalHours}h {time.Minutes}m";
+        else
+            return $"{(int)time.TotalMinutes}m {time.Seconds}s";
+    }
+    
+    public void Dispose()
+    {
+        AchievementService.OnStatisticsUpdated -= OnStatisticsUpdated;
+    }
+}

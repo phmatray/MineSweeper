@@ -1,0 +1,224 @@
+@using MineSweeper.Models
+@using MineSweeper.Services
+@inject AchievementService AchievementService
+@implements IDisposable
+
+<div class="mt-6 bg-gray-700 rounded-xl p-6">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+            <span class="text-2xl">🏅</span>
+            Achievements & Statistics
+        </h2>
+        <button @onclick="ToggleView" class="px-3 py-1 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors text-sm font-semibold">
+            @(_showAchievements ? "View Stats" : "View Achievements")
+        </button>
+    </div>
+    
+    @if (_showAchievements)
+    {
+        <div class="mb-4">
+            <div class="flex justify-between items-center text-white mb-2">
+                <span class="text-lg font-semibold">Progress</span>
+                <span class="text-sm">@AchievementService.GetAchievementProgress() / @AchievementService.GetTotalAchievements()</span>
+            </div>
+            <div class="w-full bg-gray-600 rounded-full h-2">
+                <div class="bg-gradient-to-r from-green-400 to-blue-400 h-2 rounded-full transition-all duration-500"
+                     style="width: @((double)AchievementService.GetAchievementProgress() / AchievementService.GetTotalAchievements() * 100)%"></div>
+            </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-2">
+            @foreach (var achievement in Achievements.All)
+            {
+                <div class="@GetAchievementClass(achievement) rounded-lg p-3 transition-all duration-300">
+                    <div class="flex items-start gap-3">
+                        <span class="text-3xl">@achievement.Icon</span>
+                        <div class="flex-1">
+                            <h3 class="font-semibold @(achievement.IsUnlocked ? "text-white" : "text-gray-400")">
+                                @achievement.Name
+                            </h3>
+                            <p class="text-sm @(achievement.IsUnlocked ? "text-gray-300" : "text-gray-500")">
+                                @achievement.Description
+                            </p>
+                            @if (achievement.IsUnlocked && achievement.UnlockedAt.HasValue)
+                            {
+                                <p class="text-xs text-gray-400 mt-1">
+                                    Unlocked @achievement.UnlockedAt.Value.ToString("MMM d, yyyy")
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="grid md:grid-cols-2 gap-4 text-gray-300">
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-3">Overall Statistics</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Total Games:</span>
+                        <span class="font-mono text-white">@AchievementService.Statistics.TotalGamesPlayed</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Win Rate:</span>
+                        <span class="font-mono text-white">@AchievementService.Statistics.WinRate.ToString("F1")%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Current Streak:</span>
+                        <span class="font-mono text-white">@AchievementService.Statistics.CurrentWinStreak</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Best Streak:</span>
+                        <span class="font-mono text-white">@AchievementService.Statistics.BestWinStreak</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Total Play Time:</span>
+                        <span class="font-mono text-white">@FormatPlayTime(AchievementService.Statistics.TotalPlayTime)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-3">Best Times</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Beginner:</span>
+                        <span class="font-mono text-white">
+                            @(AchievementService.Statistics.BeginnerStats.BestTime.HasValue 
+                                ? FormatTime(AchievementService.Statistics.BeginnerStats.BestTime.Value) 
+                                : "--:--")
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Intermediate:</span>
+                        <span class="font-mono text-white">
+                            @(AchievementService.Statistics.IntermediateStats.BestTime.HasValue 
+                                ? FormatTime(AchievementService.Statistics.IntermediateStats.BestTime.Value) 
+                                : "--:--")
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Expert:</span>
+                        <span class="font-mono text-white">
+                            @(AchievementService.Statistics.ExpertStats.BestTime.HasValue 
+                                ? FormatTime(AchievementService.Statistics.ExpertStats.BestTime.Value) 
+                                : "--:--")
+                        </span>
+                    </div>
+                </div>
+                
+                <h3 class="text-lg font-semibold text-white mb-3 mt-4">Fun Facts</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Largest First Click:</span>
+                        <span class="font-mono text-white">@AchievementService.Statistics.LargestFirstClick cells</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>No-Flag Wins:</span>
+                        <span class="font-mono text-white">@AchievementService.Statistics.GamesWonWithoutFlags</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (_recentAchievement != null)
+{
+    <div class="fixed bottom-4 right-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white p-4 rounded-lg shadow-2xl animate-slide-in max-w-sm">
+        <div class="flex items-center gap-3">
+            <span class="text-4xl animate-bounce">@_recentAchievement.Icon</span>
+            <div>
+                <p class="font-bold text-lg">Achievement Unlocked!</p>
+                <p class="text-sm">@_recentAchievement.Name</p>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    @@keyframes slide-in {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .animate-slide-in {
+        animation: slide-in 0.5s ease-out;
+    }
+</style>
+
+@code {
+    private bool _showAchievements = true;
+    private Achievement? _recentAchievement;
+    private System.Threading.Timer? _notificationTimer;
+    
+    protected override void OnInitialized()
+    {
+        AchievementService.OnAchievementUnlocked += OnAchievementUnlocked;
+        AchievementService.OnStatisticsUpdated += OnStatisticsUpdated;
+    }
+    
+    private void OnAchievementUnlocked(Achievement achievement)
+    {
+        _recentAchievement = achievement;
+        InvokeAsync(StateHasChanged);
+        
+        _notificationTimer?.Dispose();
+        _notificationTimer = new System.Threading.Timer(_ =>
+        {
+            _recentAchievement = null;
+            InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromSeconds(5), Timeout.InfiniteTimeSpan);
+    }
+    
+    private void OnStatisticsUpdated()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+    
+    private void ToggleView()
+    {
+        _showAchievements = !_showAchievements;
+    }
+    
+    private string GetAchievementClass(Achievement achievement)
+    {
+        if (achievement.IsUnlocked)
+        {
+            return "bg-gradient-to-r from-gray-600 to-gray-700 border border-gray-500";
+        }
+        else
+        {
+            return "bg-gray-800 border border-gray-700 opacity-60";
+        }
+    }
+    
+    private string FormatTime(TimeSpan time)
+    {
+        return $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";
+    }
+    
+    private string FormatPlayTime(TimeSpan time)
+    {
+        if (time.TotalHours >= 1)
+            return $"{(int)time.TotalHours}h {time.Minutes}m";
+        else
+            return $"{(int)time.TotalMinutes}m {time.Seconds}s";
+    }
+    
+    public void Dispose()
+    {
+        AchievementService.OnAchievementUnlocked -= OnAchievementUnlocked;
+        AchievementService.OnStatisticsUpdated -= OnStatisticsUpdated;
+        _notificationTimer?.Dispose();
+    }
+}
