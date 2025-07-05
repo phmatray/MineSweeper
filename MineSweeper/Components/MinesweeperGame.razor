@@ -1,0 +1,272 @@
+@using MineSweeper.Models
+@using MineSweeper.Services
+@inject GameService GameService
+@implements IDisposable
+
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-7xl w-full">
+        <div class="text-center mb-6">
+            <h1 class="text-4xl font-bold text-white mb-2 flex items-center justify-center gap-2">
+                <span class="text-5xl">💣</span>
+                Minesweeper
+            </h1>
+        </div>
+        
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-wrap gap-4 justify-center items-center">
+                <div class="flex gap-2">
+                    <button @onclick="() => StartNewGame(GameDifficulty.Beginner)" 
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                        Beginner
+                    </button>
+                    <button @onclick="() => StartNewGame(GameDifficulty.Intermediate)" 
+                            class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-semibold">
+                        Intermediate
+                    </button>
+                    <button @onclick="() => StartNewGame(GameDifficulty.Expert)" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold">
+                        Expert
+                    </button>
+                </div>
+                
+                @if (GameService.CurrentGame != null)
+                {
+                    <div class="flex gap-6 text-white">
+                        <div class="bg-gray-700 px-4 py-2 rounded-lg flex items-center gap-2">
+                            <span class="text-2xl">🚩</span>
+                            <span class="font-mono text-xl">@GameService.CurrentGame.RemainingMines</span>
+                        </div>
+                        
+                        <button @onclick="() => StartNewGame(GameService.CurrentGame.Difficulty)" 
+                                class="text-4xl hover:scale-110 transition-transform">
+                            @GetFaceEmoji()
+                        </button>
+                        
+                        <div class="bg-gray-700 px-4 py-2 rounded-lg flex items-center gap-2">
+                            <span class="text-2xl">⏱️</span>
+                            <span class="font-mono text-xl">@FormatTime(GameService.CurrentGame.ElapsedTime)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            @if (GameService.CurrentGame != null)
+            {
+                <div class="overflow-auto flex justify-center">
+                    <div class="inline-grid gap-0.5 p-4 bg-gray-700 rounded-lg" style="grid-template-columns: repeat(@GameService.CurrentGame.Columns, minmax(0, 1fr));">
+                        @for (int row = 0; row < GameService.CurrentGame.Rows; row++)
+                        {
+                            @for (int col = 0; col < GameService.CurrentGame.Columns; col++)
+                            {
+                                var r = row;
+                                var c = col;
+                                var cell = GameService.CurrentGame.Board[r, c];
+                                
+                                <button @onclick="() => HandleCellClick(r, c)"
+                                        @oncontextmenu="() => HandleRightClick(r, c)"
+                                        @oncontextmenu:preventDefault="true"
+                                        @ondblclick="() => HandleDoubleClick(r, c)"
+                                        class="@GetCellClass(cell) transition-all duration-150 transform hover:scale-105 flex items-center justify-center font-bold text-lg @(cell.IsRevealed && !cell.IsMine ? "animate-reveal" : "")"
+                                        disabled="@(GameService.CurrentGame.Status != GameStatus.InProgress && GameService.CurrentGame.Status != GameStatus.NotStarted)">
+                                    @GetCellContent(cell)
+                                </button>
+                            }
+                        }
+                    </div>
+                </div>
+                
+                @if (GameService.CurrentGame.Status == GameStatus.Won)
+                {
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-green-400 animate-pulse">🎉 Congratulations! You Won! 🎉</p>
+                        <p class="text-white mt-2">Time: @FormatTime(GameService.CurrentGame.ElapsedTime)</p>
+                    </div>
+                }
+                else if (GameService.CurrentGame.Status == GameStatus.Lost)
+                {
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-red-400">💥 Game Over! 💥</p>
+                        <p class="text-white mt-2">Better luck next time!</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-8">
+                    <p class="text-xl text-gray-400">Select a difficulty to start playing!</p>
+                </div>
+            }
+        </div>
+        
+        <div class="mt-6 bg-gray-700 rounded-xl p-6">
+            <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                <span class="text-2xl">📖</span>
+                How to Play
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4 text-gray-300">
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Objective</h3>
+                    <p class="mb-4">Find all the mines without clicking on them. Clear all safe cells to win!</p>
+                    
+                    <h3 class="text-lg font-semibold text-white mb-2">Controls</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 font-mono">Left Click</span>
+                            <span>Reveal a cell</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 font-mono">Right Click</span>
+                            <span>Place/remove a flag</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 font-mono">Double Click</span>
+                            <span>Reveal adjacent cells (if safe)</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Number Colors</h3>
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 bg-gray-800 border border-gray-600 flex items-center justify-center text-blue-400 font-bold text-sm">1</span>
+                            <span class="text-sm">One mine nearby</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 bg-gray-800 border border-gray-600 flex items-center justify-center text-green-400 font-bold text-sm">2</span>
+                            <span class="text-sm">Two mines nearby</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 bg-gray-800 border border-gray-600 flex items-center justify-center text-red-400 font-bold text-sm">3</span>
+                            <span class="text-sm">Three mines nearby</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 bg-gray-800 border border-gray-600 flex items-center justify-center text-purple-400 font-bold text-sm">4</span>
+                            <span class="text-sm">Four mines nearby</span>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-lg font-semibold text-white mb-2">Tips</h3>
+                    <ul class="space-y-1 text-sm">
+                        <li>• Your first click is always safe</li>
+                        <li>• Use flags to mark suspected mines</li>
+                        <li>• Numbers show adjacent mine count</li>
+                        <li>• Empty cells auto-reveal neighbors</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private System.Threading.Timer? _timer;
+    
+    protected override void OnInitialized()
+    {
+        GameService.OnGameStateChanged += OnGameStateChanged;
+        _timer = new System.Threading.Timer(_ => InvokeAsync(StateHasChanged), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+    
+    private void OnGameStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+    
+    private void StartNewGame(GameDifficulty difficulty)
+    {
+        GameService.NewGame(difficulty);
+    }
+    
+    private void HandleCellClick(int row, int col)
+    {
+        GameService.RevealCell(row, col);
+    }
+    
+    private void HandleRightClick(int row, int col)
+    {
+        GameService.ToggleFlag(row, col);
+    }
+    
+    private void HandleDoubleClick(int row, int col)
+    {
+        GameService.RevealAdjacentIfSafe(row, col);
+    }
+    
+    
+    private string GetCellClass(Cell cell)
+    {
+        var baseClass = "w-8 h-8 text-sm";
+        
+        if (!cell.IsRevealed)
+        {
+            return $"{baseClass} bg-gray-600 hover:bg-gray-500 border-2 border-gray-500";
+        }
+        
+        if (cell.IsMine)
+        {
+            return $"{baseClass} bg-red-600 border-2 border-red-700";
+        }
+        
+        return $"{baseClass} bg-gray-800 border border-gray-700 " + GetNumberColor(cell.AdjacentMines);
+    }
+    
+    private string GetNumberColor(int count)
+    {
+        return count switch
+        {
+            1 => "text-blue-400",
+            2 => "text-green-400",
+            3 => "text-red-400",
+            4 => "text-purple-400",
+            5 => "text-yellow-400",
+            6 => "text-pink-400",
+            7 => "text-gray-300",
+            8 => "text-gray-100",
+            _ => ""
+        };
+    }
+    
+    private string GetCellContent(Cell cell)
+    {
+        if (!cell.IsRevealed && cell.IsFlagged)
+        {
+            return "🚩";
+        }
+        
+        if (!cell.IsRevealed)
+        {
+            return "";
+        }
+        
+        if (cell.IsMine)
+        {
+            return "💣";
+        }
+        
+        return cell.AdjacentMines > 0 ? cell.AdjacentMines.ToString() : "";
+    }
+    
+    private string GetFaceEmoji()
+    {
+        if (GameService.CurrentGame == null) return "😊";
+        
+        return GameService.CurrentGame.Status switch
+        {
+            GameStatus.Won => "😎",
+            GameStatus.Lost => "😵",
+            _ => "😊"
+        };
+    }
+    
+    private string FormatTime(TimeSpan time)
+    {
+        return $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";
+    }
+    
+    public void Dispose()
+    {
+        GameService.OnGameStateChanged -= OnGameStateChanged;
+        _timer?.Dispose();
+    }
+}
