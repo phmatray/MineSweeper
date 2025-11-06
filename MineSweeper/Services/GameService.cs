@@ -172,15 +172,19 @@ public class GameService
     {
         if (!IsValidCell(row, col) || visited.Contains((row, col)))
             return;
-            
+
         visited.Add((row, col));
         var cell = CurrentGame!.Board[row, col];
-        
-        if (cell.IsRevealed || cell.IsFlagged || cell.IsMine)
+
+        if (cell.IsRevealed || cell.IsFlagged)
             return;
-            
+
         cellsToReveal.Add((row, col));
-        
+
+        // If this cell is a mine, don't flood-fill its neighbors
+        if (cell.IsMine)
+            return;
+
         // If this cell has no adjacent mines, collect its neighbors
         if (cell.AdjacentMines == 0)
         {
