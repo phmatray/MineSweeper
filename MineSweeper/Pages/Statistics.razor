@@ -39,9 +39,9 @@
                                 @AchievementService.Statistics.WinRate.ToString("F1")%
                             </span>
                         </div>
-                        <div class="mt-2 bg-gray-800 rounded-full h-3 overflow-hidden">
-                            <div class="h-full bg-linear-to-r from-green-500 to-green-400 transition-all duration-500"
-                                 style="width: @AchievementService.Statistics.WinRate%"></div>
+                        <div class="mt-2 progress-bar">
+                            <div class="progress-fill gradient-green"
+                                 style="--progress-width: @AchievementService.Statistics.WinRate%"></div>
                         </div>
                     </div>
                 </div>

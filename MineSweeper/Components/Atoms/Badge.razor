@@ -2,47 +2,6 @@
 
 <span class="@GetBadgeClasses()">@ChildContent</span>
 
-<style>
-    .badge-base {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-
-    .badge-primary {
-        background-color: #2563eb;
-        color: white;
-    }
-
-    .badge-success {
-        background-color: #10b981;
-        color: white;
-    }
-
-    .badge-warning {
-        background-color: #f59e0b;
-        color: white;
-    }
-
-    .badge-danger {
-        background-color: #ef4444;
-        color: white;
-    }
-
-    .badge-info {
-        background-color: #3b82f6;
-        color: white;
-    }
-
-    .badge-gray {
-        background-color: #6b7280;
-        color: white;
-    }
-</style>
-
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public string Variant { get; set; } = "primary"; // primary, success, warning, danger, info, gray

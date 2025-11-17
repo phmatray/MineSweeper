@@ -1,0 +1,19 @@
+/* Molecule: AchievementCard - Component-scoped styles */
+
+.achievement-card {
+    border-radius: 0.75rem;
+    padding: 1rem;
+    transition: all 300ms;
+}
+
+.achievement-locked {
+    background-color: #111827;
+    border: 2px solid #374151;
+    opacity: 0.75;
+}
+
+.achievement-unlocked {
+    background: linear-gradient(to bottom right, #374151, #1f2937);
+    border: 2px solid rgba(217, 119, 6, 0.5);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}

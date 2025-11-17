@@ -20,16 +20,16 @@
                 <span class="text-lg font-semibold">Progress</span>
                 <span class="text-sm">@AchievementService.GetAchievementProgress() / @AchievementService.GetTotalAchievements()</span>
             </div>
-            <div class="w-full bg-gray-600 rounded-full h-2">
-                <div class="bg-linear-to-r from-green-400 to-blue-400 h-2 rounded-full transition-all duration-500"
-                     style="width: @((double)AchievementService.GetAchievementProgress() / AchievementService.GetTotalAchievements() * 100)%"></div>
+            <div class="progress-bar">
+                <div class="progress-fill gradient-blue"
+                     style="--progress-width: @((double)AchievementService.GetAchievementProgress() / AchievementService.GetTotalAchievements() * 100)%"></div>
             </div>
         </div>
         
         <div class="grid md:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-2">
             @foreach (var achievement in Achievements.All)
             {
-                <div class="@GetAchievementClass(achievement) rounded-lg p-3 transition-all duration-300">
+                <div class="achievement-card @(achievement.IsUnlocked ? "achievement-unlocked" : "achievement-locked")">
                     <div class="flex items-start gap-3">
                         <span class="text-3xl">@achievement.Icon</span>
                         <div class="flex-1">
@@ -127,7 +127,7 @@
 
 @if (_recentAchievement != null)
 {
-    <div class="fixed bottom-4 right-4 bg-linear-to-r from-yellow-500 to-yellow-600 text-white p-4 rounded-lg shadow-2xl animate-slide-in max-w-sm">
+    <div class="achievement-notification">
         <div class="flex items-center gap-3">
             <span class="text-4xl animate-bounce">@_recentAchievement.Icon</span>
             <div>
@@ -137,57 +137,6 @@
         </div>
     </div>
 }
-
-<style>
-    /* ===== ACHIEVEMENTS ===== */
-    .achievement-card {
-        border-radius: 0.75rem;
-        padding: 1rem;
-        transition: all 300ms;
-    }
-
-    .achievement-locked {
-        background-color: #111827;
-        border: 2px solid #374151;
-        opacity: 0.75;
-    }
-
-    .achievement-unlocked {
-        background: linear-gradient(to bottom right, #374151, #1f2937);
-        border: 2px solid rgba(217, 119, 6, 0.5);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        animation: achievement-unlock 0.5s ease-out;
-    }
-
-    @@keyframes achievement-unlock {
-        0% {
-            transform: scale(0.8) rotate(-5deg);
-            opacity: 0;
-        }
-        50% {
-            transform: scale(1.1) rotate(5deg);
-        }
-        100% {
-            transform: scale(1) rotate(0deg);
-            opacity: 1;
-        }
-    }
-
-    @@keyframes slide-in {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    .animate-slide-in {
-        animation: slide-in 0.5s ease-out;
-    }
-</style>
 
 @code {
     private bool _showAchievements = true;
@@ -222,19 +171,7 @@
     {
         _showAchievements = !_showAchievements;
     }
-    
-    private string GetAchievementClass(Achievement achievement)
-    {
-        if (achievement.IsUnlocked)
-        {
-            return "bg-linear-to-r from-gray-600 to-gray-700 border border-gray-500";
-        }
-        else
-        {
-            return "bg-gray-800 border border-gray-700 opacity-60";
-        }
-    }
-    
+
     private string FormatTime(TimeSpan time)
     {
         return $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";

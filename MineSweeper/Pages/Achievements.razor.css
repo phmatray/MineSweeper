@@ -1,0 +1,58 @@
+/* Page: Achievements - Component-scoped styles */
+
+.achievement-card {
+    border-radius: 0.75rem;
+    padding: 1rem;
+    transition: all 300ms;
+}
+
+.achievement-locked {
+    background-color: #111827;
+    border: 2px solid #374151;
+    opacity: 0.75;
+}
+
+.achievement-unlocked {
+    background: linear-gradient(to bottom right, #374151, #1f2937);
+    border: 2px solid rgba(217, 119, 6, 0.5);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    animation: achievement-unlock 0.5s ease-out;
+}
+
+.achievement-notification {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background: linear-gradient(to right, #eab308, #ca8a04);
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 24rem;
+    animation: slide-in 0.5s ease-out;
+}
+
+@keyframes achievement-unlock {
+    0% {
+        transform: scale(0.8) rotate(-5deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1) rotate(5deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

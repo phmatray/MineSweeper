@@ -20,9 +20,9 @@
                     </p>
                     <p class="text-sm text-gray-400">Unlocked</p>
                 </div>
-                <div class="w-32 bg-gray-700 rounded-full h-3 overflow-hidden">
-                    <div class="h-full bg-linear-to-r from-yellow-500 to-yellow-400 transition-all duration-500"
-                         style="width: @((double)AchievementService.GetAchievementProgress() / AchievementService.GetTotalAchievements() * 100)%"></div>
+                <div class="w-32 progress-bar">
+                    <div class="progress-fill gradient-yellow"
+                         style="--progress-width: @((double)AchievementService.GetAchievementProgress() / AchievementService.GetTotalAchievements() * 100)%"></div>
                 </div>
             </div>
         </div>
@@ -46,7 +46,7 @@
         <div class="grid md:grid-cols-2 gap-4">
             @foreach (var achievement in GetFilteredAchievements())
             {
-                <div class="achievement-card @(achievement.IsUnlocked ? "achievement-unlocked" : "achievement-locked") @(!achievement.IsUnlocked ? "hover:scale-105" : "")">
+                <div class="achievement-card @(achievement.IsUnlocked ? "achievement-unlocked" : "achievement-locked hover:scale-105")">
                     <div class="flex items-start gap-4">
                         <div class="text-5xl @(!achievement.IsUnlocked ? "grayscale opacity-50" : "")">
                             @achievement.Icon
@@ -67,7 +67,7 @@
                             else
                             {
                                 <div class="mt-2">
-                                    <span class="text-xs text-gray-500 bg-gray-700 px-2 py-1 rounded-sm">
+                                    <span class="text-xs text-gray-500 bg-gray-700 px-2 py-1 rounded-xs">
                                         @GetCategoryIcon(achievement.Category) @achievement.Category
                                     </span>
                                 </div>

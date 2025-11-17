@@ -12,43 +12,6 @@
     </div>
 </button>
 
-<style>
-    .difficulty-button {
-        width: 100%;
-        padding: 1rem;
-        border-radius: 0.75rem;
-        border: 2px solid transparent;
-        transition: all 200ms;
-        cursor: pointer;
-        text-align: left;
-    }
-
-    .difficulty-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-
-    .difficulty-button.selected {
-        border-color: currentColor;
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-    }
-
-    .difficulty-beginner {
-        background: linear-gradient(to bottom right, #10b981, #059669);
-        color: white;
-    }
-
-    .difficulty-intermediate {
-        background: linear-gradient(to bottom right, #f59e0b, #d97706);
-        color: white;
-    }
-
-    .difficulty-expert {
-        background: linear-gradient(to bottom right, #ef4444, #dc2626);
-        color: white;
-    }
-</style>
-
 @code {
     [Parameter, EditorRequired] public string DifficultyName { get; set; } = "";
     [Parameter, EditorRequired] public string Icon { get; set; } = "";
