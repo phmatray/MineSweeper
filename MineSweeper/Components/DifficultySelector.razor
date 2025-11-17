@@ -32,9 +32,9 @@
         
         return difficulty switch
         {
-            GameDifficulty.Beginner => baseClass + "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700",
-            GameDifficulty.Intermediate => baseClass + "bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700",
-            GameDifficulty.Expert => baseClass + "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700",
+            GameDifficulty.Beginner => baseClass + "bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700",
+            GameDifficulty.Intermediate => baseClass + "bg-linear-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700",
+            GameDifficulty.Expert => baseClass + "bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700",
             _ => baseClass + "bg-gray-600"
         };
     }
