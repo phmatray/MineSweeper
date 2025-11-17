@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MineSweeper;
+using MineSweeper.Engine.Services;
 using MineSweeper.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);

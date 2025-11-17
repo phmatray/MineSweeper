@@ -1,4 +1,4 @@
-namespace MineSweeper.Models;
+namespace MineSweeper.Engine.Models;
 
 public class Cell
 {
@@ -8,7 +8,7 @@ public class Cell
     public bool IsRevealed { get; set; }
     public bool IsFlagged { get; set; }
     public int AdjacentMines { get; set; }
-    
+
     public Cell(int row, int column)
     {
         Row = row;

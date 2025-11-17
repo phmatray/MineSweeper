@@ -1,4 +1,4 @@
-namespace MineSweeper.Models;
+namespace MineSweeper.Engine.Models;
 
 public enum GameStatus
 {
@@ -21,14 +21,14 @@ public class GameState
     public DateTime? EndTime { get; set; }
     public GameDifficulty Difficulty { get; set; }
     public DateTime CreatedAt { get; set; }
-    
+
     public int RemainingMines => TotalMines - FlaggedCells;
-    public TimeSpan ElapsedTime => Status == GameStatus.InProgress && StartTime.HasValue 
-        ? DateTime.Now - StartTime.Value 
-        : EndTime.HasValue && StartTime.HasValue 
-            ? EndTime.Value - StartTime.Value 
+    public TimeSpan ElapsedTime => Status == GameStatus.InProgress && StartTime.HasValue
+        ? DateTime.Now - StartTime.Value
+        : EndTime.HasValue && StartTime.HasValue
+            ? EndTime.Value - StartTime.Value
             : TimeSpan.Zero;
-    
+
     public GameState(GameDifficulty difficulty)
     {
         Difficulty = difficulty;
@@ -41,7 +41,7 @@ public class GameState
         CreatedAt = DateTime.Now;
         InitializeBoard();
     }
-    
+
     private void InitializeBoard()
     {
         for (int row = 0; row < Rows; row++)

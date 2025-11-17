@@ -16,6 +16,14 @@
     <PackageReference Include="PublishSPAforGitHubPages.Build" Version="3.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MineSweeper.Engine\MineSweeper.Engine.csproj" />
+  </ItemGroup>
+
   <!-- Build Tailwind CSS before building the project -->
   <Target Name="BuildCSS" BeforeTargets="Build">
     <Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" />

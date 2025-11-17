@@ -1,4 +1,4 @@
-namespace MineSweeper.Models;
+namespace MineSweeper.Engine.Models;
 
 public enum GameDifficulty
 {

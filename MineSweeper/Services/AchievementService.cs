@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.JSInterop;
-using MineSweeper.Models;
+using MineSweeper.Engine.Models;
+using MineSweeper.Engine.Services;
 
 namespace MineSweeper.Services;
 
@@ -9,7 +10,8 @@ public class AchievementService : IDisposable
     private readonly IJSRuntime _jsRuntime;
     private readonly GameService _gameService;
     private readonly SoundService _soundService;
-    
+    private readonly AchievementChecker _achievementChecker;
+
     private const string StatisticsKey = "minesweeper_statistics";
     private const string AchievementsKey = "minesweeper_achievements";
     
@@ -28,7 +30,8 @@ public class AchievementService : IDisposable
         _jsRuntime = jsRuntime;
         _gameService = gameService;
         _soundService = soundService;
-        
+        _achievementChecker = new AchievementChecker();
+
         _gameService.OnGameStateChanged += OnGameStateChanged;
         _ = LoadDataAsync();
     }
@@ -117,116 +120,37 @@ public class AchievementService : IDisposable
     private async Task ProcessGameEndAsync(GameState game)
     {
         if (_gameStartTime == null) return;
-        
+
         var playTime = DateTime.Now - _gameStartTime.Value;
         _gameStartTime = null;
-        
-        // Update general statistics
-        Statistics.TotalGamesPlayed++;
-        Statistics.TotalCellsRevealed += _cellsRevealedInCurrentGame;
-        Statistics.TotalFlagsPlaced += game.FlaggedCells;
-        Statistics.TotalPlayTime = Statistics.TotalPlayTime.Add(playTime);
-        Statistics.LastPlayedAt = DateTime.Now;
-        
-        if (_cellsRevealedOnFirstClick > Statistics.LargestFirstClick)
-            Statistics.LargestFirstClick = _cellsRevealedOnFirstClick;
-        
-        // Update difficulty-specific statistics
-        var diffStats = game.Difficulty switch
+
+        var gameEndData = new AchievementChecker.GameEndData(
+            game,
+            _cellsRevealedOnFirstClick,
+            _usedFlagsInCurrentGame,
+            playTime
+        );
+
+        // Update statistics using the engine
+        _achievementChecker.UpdateStatistics(Statistics, gameEndData);
+
+        // Check for achievements using the engine
+        var newAchievements = _achievementChecker.CheckAchievements(Statistics, gameEndData, UnlockedAchievements);
+
+        // Process newly unlocked achievements
+        foreach (var achievement in newAchievements)
         {
-            GameDifficulty.Beginner => Statistics.BeginnerStats,
-            GameDifficulty.Intermediate => Statistics.IntermediateStats,
-            GameDifficulty.Expert => Statistics.ExpertStats,
-            _ => null
-        };
-        
-        if (diffStats != null)
-        {
-            diffStats.GamesPlayed++;
-            
-            if (game.Status == GameStatus.Won)
-            {
-                Statistics.TotalWins++;
-                diffStats.GamesWon++;
-                diffStats.AddGameTime(game.ElapsedTime);
-                
-                if (!_usedFlagsInCurrentGame)
-                    Statistics.GamesWonWithoutFlags++;
-                
-                Statistics.CurrentWinStreak++;
-                if (Statistics.CurrentWinStreak > Statistics.BestWinStreak)
-                    Statistics.BestWinStreak = Statistics.CurrentWinStreak;
-            }
-            else
-            {
-                Statistics.CurrentWinStreak = 0;
-            }
+            UnlockedAchievements.Add(achievement);
+            OnAchievementUnlocked?.Invoke(achievement);
+            if (_soundService.SoundEnabled)
+                await _soundService.PlayWinAsync(); // Reuse win sound for achievements
         }
-        
-        // Check for achievements
-        await CheckAchievementsAsync(game);
-        
+
         // Save data
         await SaveDataAsync();
         OnStatisticsUpdated?.Invoke();
     }
     
-    private async Task CheckAchievementsAsync(GameState game)
-    {
-        if (game.Status != GameStatus.Won) return;
-        
-        var newAchievements = new List<Achievement>();
-        
-        // First Victory
-        await CheckAndUnlockAsync("first_win", Statistics.TotalWins == 1, newAchievements);
-        
-        // Speed achievements
-        if (game.Difficulty == GameDifficulty.Beginner && game.ElapsedTime.TotalSeconds < 10)
-            await CheckAndUnlockAsync("beginner_master", true, newAchievements);
-            
-        if (game.Difficulty == GameDifficulty.Intermediate && game.ElapsedTime.TotalSeconds < 40)
-            await CheckAndUnlockAsync("intermediate_master", true, newAchievements);
-            
-        if (game.Difficulty == GameDifficulty.Expert && game.ElapsedTime.TotalSeconds < 150)
-            await CheckAndUnlockAsync("expert_master", true, newAchievements);
-            
-        if (game.Difficulty == GameDifficulty.Expert && game.ElapsedTime.TotalSeconds < 100)
-            await CheckAndUnlockAsync("speed_demon", true, newAchievements);
-        
-        // Skill achievements
-        await CheckAndUnlockAsync("perfectionist", Statistics.GamesWonWithoutFlags >= 10, newAchievements);
-        await CheckAndUnlockAsync("winning_streak", Statistics.CurrentWinStreak >= 5, newAchievements);
-        
-        if (game.FlaggedCells == game.TotalMines)
-            await CheckAndUnlockAsync("flag_master", true, newAchievements);
-        
-        // Special achievements
-        await CheckAndUnlockAsync("lucky_start", _cellsRevealedOnFirstClick >= 50, newAchievements);
-        await CheckAndUnlockAsync("marathon", Statistics.TotalGamesPlayed >= 100, newAchievements);
-        
-        // Notify about new achievements
-        foreach (var achievement in newAchievements)
-        {
-            OnAchievementUnlocked?.Invoke(achievement);
-            if (_soundService.SoundEnabled)
-                await _soundService.PlayWinAsync(); // Reuse win sound for achievements
-        }
-    }
-    
-    private async Task CheckAndUnlockAsync(string achievementId, bool condition, List<Achievement> newAchievements)
-    {
-        if (!condition) return;
-        
-        var achievement = Achievements.All.FirstOrDefault(a => a.Id == achievementId);
-        if (achievement != null && !achievement.IsUnlocked)
-        {
-            achievement.IsUnlocked = true;
-            achievement.UnlockedAt = DateTime.Now;
-            UnlockedAchievements.Add(achievement);
-            newAchievements.Add(achievement);
-            await SaveDataAsync();
-        }
-    }
     
     public int GetAchievementProgress()
     {

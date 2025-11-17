@@ -1,5 +1,4 @@
 @page "/achievements"
-@using MineSweeper.Models
 @using MineSweeper.Services
 @inject AchievementService AchievementService
 @implements IDisposable
@@ -89,7 +88,7 @@
         <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
             @foreach (var category in Enum.GetValues<AchievementCategory>())
             {
-                var categoryAchievements = MineSweeper.Models.Achievements.All.Where(a => a.Category == category).ToList();
+                var categoryAchievements = MineSweeper.Engine.Models.Achievements.All.Where(a => a.Category == category).ToList();
                 var unlockedCount = categoryAchievements.Count(a => a.IsUnlocked);
                 
                 <div class="bg-gray-700 rounded-lg p-4 text-center">
@@ -145,9 +144,9 @@
     
     private IEnumerable<Achievement> GetFilteredAchievements()
     {
-        var achievements = _selectedCategory.HasValue 
-            ? MineSweeper.Models.Achievements.All.Where(a => a.Category == _selectedCategory.Value)
-            : MineSweeper.Models.Achievements.All;
+        var achievements = _selectedCategory.HasValue
+            ? MineSweeper.Engine.Models.Achievements.All.Where(a => a.Category == _selectedCategory.Value)
+            : MineSweeper.Engine.Models.Achievements.All;
             
         return achievements.OrderByDescending(a => a.IsUnlocked)
                           .ThenBy(a => a.Category)

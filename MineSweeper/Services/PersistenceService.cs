@@ -1,45 +1,34 @@
 using System.Text.Json;
 using Microsoft.JSInterop;
-using MineSweeper.Models;
+using MineSweeper.Engine.Models;
+using MineSweeper.Engine.Services;
 
 namespace MineSweeper.Services;
 
 public class PersistenceService
 {
     private readonly IJSRuntime _jsRuntime;
+    private readonly GameService _gameService;
     private const string GameStateKey = "minesweeper_current_game";
     private const string SoundSettingsKey = "minesweeper_sound_settings";
-    
-    public PersistenceService(IJSRuntime jsRuntime)
+
+    public PersistenceService(IJSRuntime jsRuntime, GameService gameService)
     {
         _jsRuntime = jsRuntime;
+        _gameService = gameService;
     }
-    
-    public async Task SaveGameStateAsync(GameState? gameState)
+
+    public async Task SaveGameStateAsync()
     {
         try
         {
-            if (gameState == null || gameState.Status == GameStatus.NotStarted)
+            var savedState = _gameService.SerializeGameState();
+            if (savedState == null)
             {
                 await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", GameStateKey);
                 return;
             }
-            
-            var savedState = new SavedGameState
-            {
-                Difficulty = gameState.Difficulty,
-                Status = gameState.Status,
-                Rows = gameState.Rows,
-                Columns = gameState.Columns,
-                TotalMines = gameState.TotalMines,
-                FlaggedCells = gameState.FlaggedCells,
-                RevealedCells = gameState.RevealedCells,
-                StartTime = gameState.StartTime,
-                EndTime = gameState.EndTime,
-                CreatedAt = gameState.CreatedAt,
-                BoardData = SerializeBoard(gameState.Board)
-            };
-            
+
             var json = JsonSerializer.Serialize(savedState);
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", GameStateKey, json);
         }
@@ -48,7 +37,7 @@ public class PersistenceService
             // Handle gracefully if localStorage is not available
         }
     }
-    
+
     public async Task<SavedGameState?> LoadGameStateAsync()
     {
         try
@@ -56,7 +45,7 @@ public class PersistenceService
             var json = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", GameStateKey);
             if (string.IsNullOrEmpty(json))
                 return null;
-                
+
             return JsonSerializer.Deserialize<SavedGameState>(json);
         }
         catch
@@ -64,7 +53,7 @@ public class PersistenceService
             return null;
         }
     }
-    
+
     public async Task ClearGameStateAsync()
     {
         try
@@ -76,7 +65,7 @@ public class PersistenceService
             // Handle gracefully
         }
     }
-    
+
     public async Task SaveSoundSettingsAsync(bool soundEnabled)
     {
         try
@@ -88,7 +77,7 @@ public class PersistenceService
             // Handle gracefully
         }
     }
-    
+
     public async Task<bool> LoadSoundSettingsAsync()
     {
         try
@@ -103,51 +92,4 @@ public class PersistenceService
         }
         return true; // Default to enabled
     }
-    
-    private List<CellData> SerializeBoard(Cell[,] board)
-    {
-        var cells = new List<CellData>();
-        for (int row = 0; row < board.GetLength(0); row++)
-        {
-            for (int col = 0; col < board.GetLength(1); col++)
-            {
-                var cell = board[row, col];
-                cells.Add(new CellData
-                {
-                    Row = row,
-                    Col = col,
-                    IsMine = cell.IsMine,
-                    IsRevealed = cell.IsRevealed,
-                    IsFlagged = cell.IsFlagged,
-                    AdjacentMines = cell.AdjacentMines
-                });
-            }
-        }
-        return cells;
-    }
-}
-
-public class SavedGameState
-{
-    public GameDifficulty Difficulty { get; set; }
-    public GameStatus Status { get; set; }
-    public int Rows { get; set; }
-    public int Columns { get; set; }
-    public int TotalMines { get; set; }
-    public int FlaggedCells { get; set; }
-    public int RevealedCells { get; set; }
-    public DateTime? StartTime { get; set; }
-    public DateTime? EndTime { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public List<CellData> BoardData { get; set; } = new();
-}
-
-public class CellData
-{
-    public int Row { get; set; }
-    public int Col { get; set; }
-    public bool IsMine { get; set; }
-    public bool IsRevealed { get; set; }
-    public bool IsFlagged { get; set; }
-    public int AdjacentMines { get; set; }
 }

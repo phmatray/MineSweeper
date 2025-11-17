@@ -1,4 +1,3 @@
-@using MineSweeper.Models
 @using MineSweeper.Services
 @inject GameService GameService
 @inject SoundService SoundService
@@ -132,9 +131,9 @@
     private async void OnGameStateChanged()
     {
         await InvokeAsync(StateHasChanged);
-        
+
         // Save game state
-        await PersistenceService.SaveGameStateAsync(GameService.CurrentGame);
+        await PersistenceService.SaveGameStateAsync();
         
         if (GameService.CurrentGame != null)
         {
