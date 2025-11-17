@@ -9,11 +9,11 @@
 
 <div class="p-4">
     <div class="max-w-6xl mx-auto">
-        <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
-            <div class="bg-linear-to-r from-gray-900 to-gray-800 p-6 text-center">
+        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-blue-500/20">
+            <div class="bg-gradient-to-r from-blue-600/20 via-cyan-600/20 to-blue-600/20 p-6 text-center border-b border-blue-500/20">
                 <h1 class="text-3xl md:text-4xl font-bold text-white flex items-center justify-center gap-3">
-                    <span class="text-5xl animate-pulse">💣</span>
-                    <span>Play MineSweeper</span>
+                    <span class="text-5xl animate-bounce">💣</span>
+                    <span class="bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-300 bg-clip-text text-transparent">Play MineSweeper</span>
                 </h1>
             </div>
             
@@ -21,7 +21,7 @@
                 @if (_gameRestored)
                 {
                     <div class="mx-auto max-w-lg">
-                        <div class="p-4 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-xl text-center shadow-lg animate-pulse">
+                        <div class="p-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl text-center shadow-lg animate-pulse border border-blue-400/30">
                             <p class="font-semibold flex items-center justify-center gap-2">
                                 <span class="text-2xl">✨</span>
                                 Previous game restored!
@@ -48,35 +48,35 @@
                 else
                 {
                     <div class="text-center py-16">
-                        <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-700 rounded-full mb-4 animate-bounce">
+                        <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-full mb-4 animate-bounce border-2 border-blue-500/30 shadow-xl shadow-blue-500/20">
                             <span class="text-5xl">💣</span>
                         </div>
-                        <p class="text-2xl text-gray-400 font-medium">Choose a difficulty to start playing!</p>
-                        <p class="text-gray-500 mt-2">Can you clear all the mines?</p>
+                        <p class="text-2xl text-blue-200 font-medium">Choose a difficulty to start playing!</p>
+                        <p class="text-blue-300/60 mt-2">Can you clear all the mines?</p>
                     </div>
                 }
             </div>
         </div>
-        
+
         <!-- Quick Game Info -->
-        <div class="mt-6 bg-gray-700 rounded-xl p-4">
+        <div class="mt-6 bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 border border-blue-500/20">
             <div class="flex flex-wrap justify-between items-center gap-4">
                 <div class="flex items-center gap-6">
-                    <button @onclick="ToggleSound" 
-                            class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+                    <button @onclick="ToggleSound"
+                            class="flex items-center gap-2 text-blue-200 hover:text-white transition-all hover:scale-105">
                         <span class="text-xl">@(SoundService.SoundEnabled ? "🔊" : "🔇")</span>
                         <span class="text-sm">Sound @(SoundService.SoundEnabled ? "On" : "Off")</span>
                     </button>
-                    <button @onclick="ShowHelp" 
-                            class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+                    <button @onclick="ShowHelp"
+                            class="flex items-center gap-2 text-blue-200 hover:text-white transition-all hover:scale-105">
                         <span class="text-xl">❓</span>
                         <span class="text-sm">Help</span>
                     </button>
                 </div>
-                <div class="flex items-center gap-4 text-sm text-gray-400">
-                    <span>Win Rate: <span class="text-white font-semibold">@AchievementService.Statistics.WinRate.ToString("F0")%</span></span>
-                    <span>Streak: <span class="text-white font-semibold">@AchievementService.Statistics.CurrentWinStreak</span></span>
-                    <a href="stats" class="text-blue-400 hover:text-blue-300 transition-colors">View Full Stats →</a>
+                <div class="flex items-center gap-4 text-sm text-blue-300/80">
+                    <span>Win Rate: <span class="text-cyan-300 font-semibold">@AchievementService.Statistics.WinRate.ToString("F0")%</span></span>
+                    <span>Streak: <span class="text-cyan-300 font-semibold">@AchievementService.Statistics.CurrentWinStreak</span></span>
+                    <a href="stats" class="text-blue-400 hover:text-cyan-300 transition-colors hover:underline">View Full Stats →</a>
                 </div>
             </div>
         </div>
