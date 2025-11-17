@@ -1,0 +1,85 @@
+@* Atom: Button - Basic button component *@
+
+<button @onclick="OnClick"
+        class="@GetButtonClasses()"
+        disabled="@Disabled"
+        type="@Type">
+    @ChildContent
+</button>
+
+<style>
+    .btn-base {
+        font-weight: 600;
+        border-radius: 0.5rem;
+        transition: all 150ms;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-base:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        background-color: #2563eb;
+        color: white;
+        transform: scale(1);
+    }
+
+    .btn-primary:not(:disabled):hover {
+        background-color: #1d4ed8;
+        transform: scale(1.05);
+    }
+
+    .btn-secondary {
+        padding: 0.5rem 1rem;
+        background-color: #374151;
+        color: white;
+    }
+
+    .btn-secondary:not(:disabled):hover {
+        background-color: #4b5563;
+    }
+
+    .btn-icon {
+        padding: 0.5rem;
+        background-color: transparent;
+        color: #d1d5db;
+    }
+
+    .btn-icon:not(:disabled):hover {
+        color: white;
+        background-color: #1f2937;
+    }
+</style>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public string Variant { get; set; } = "primary"; // primary, secondary, icon
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string Type { get; set; } = "button";
+    [Parameter] public string? AdditionalClasses { get; set; }
+
+    private string GetButtonClasses()
+    {
+        var classes = "btn-base";
+
+        classes += Variant switch
+        {
+            "primary" => " btn-primary",
+            "secondary" => " btn-secondary",
+            "icon" => " btn-icon",
+            _ => " btn-primary"
+        };
+
+        if (!string.IsNullOrEmpty(AdditionalClasses))
+        {
+            classes += " " + AdditionalClasses;
+        }
+
+        return classes;
+    }
+}
