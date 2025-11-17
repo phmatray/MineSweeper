@@ -1,0 +1,69 @@
+@* Molecule: ProgressBar - Progress indicator *@
+
+<div class="progress-container">
+    @if (ShowLabel)
+    {
+        <div class="flex justify-between items-center text-sm mb-2">
+            <span class="@LabelColorClass">@Label</span>
+            @if (ShowPercentage)
+            {
+                <span class="@LabelColorClass">@Percentage.ToString("F0")%</span>
+            }
+        </div>
+    }
+    <div class="progress-bar">
+        <div class="progress-fill @GetGradientClass()"
+             style="width: @Percentage%"></div>
+    </div>
+</div>
+
+<style>
+    .progress-bar {
+        background-color: #1f2937;
+        border-radius: 9999px;
+        height: 0.75rem;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        transition: all 500ms;
+    }
+
+    .gradient-green {
+        background: linear-gradient(to right, #10b981, #34d399);
+    }
+
+    .gradient-blue {
+        background: linear-gradient(to right, #3b82f6, #60a5fa);
+    }
+
+    .gradient-yellow {
+        background: linear-gradient(to right, #f59e0b, #fbbf24);
+    }
+
+    .gradient-red {
+        background: linear-gradient(to right, #ef4444, #f87171);
+    }
+</style>
+
+@code {
+    [Parameter] public double Percentage { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public bool ShowLabel { get; set; } = true;
+    [Parameter] public bool ShowPercentage { get; set; } = true;
+    [Parameter] public string Color { get; set; } = "green"; // green, blue, yellow, red
+    [Parameter] public string LabelColorClass { get; set; } = "text-white";
+
+    private string GetGradientClass()
+    {
+        return Color switch
+        {
+            "green" => "gradient-green",
+            "blue" => "gradient-blue",
+            "yellow" => "gradient-yellow",
+            "red" => "gradient-red",
+            _ => "gradient-green"
+        };
+    }
+}

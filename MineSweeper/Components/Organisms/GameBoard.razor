@@ -4,91 +4,6 @@
 @implements IDisposable
 
 <style>
-    /* ===== GAME CELLS ===== */
-    .cell-button {
-        border-radius: 0.25rem;
-        transition: transform 100ms ease-out;
-        transform: scale(1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 0.875rem;
-        width: 1.75rem;
-        height: 1.75rem;
-        will-change: transform;
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-    }
-
-    @@media (min-width: 768px) {
-        .cell-button {
-            font-size: 1rem;
-            width: 2rem;
-            height: 2rem;
-        }
-    }
-
-    .cell-button:not(:disabled):hover {
-        transform: scale(1.1);
-    }
-
-    .cell-unrevealed {
-        background: linear-gradient(to bottom right, #4b5563, #374151);
-        border: 2px solid #6b7280;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    }
-
-    .cell-unrevealed:not(:disabled):hover {
-        background: linear-gradient(to bottom right, #6b7280, #4b5563);
-    }
-
-    .cell-mine {
-        background: linear-gradient(to bottom right, #dc2626, #b91c1c);
-        border: 2px solid #991b1b;
-        animation: mine-reveal 0.5s ease-out;
-    }
-
-    @@keyframes mine-reveal {
-        0% {
-            transform: scale(0) rotate(180deg);
-        }
-        50% {
-            transform: scale(1.2) rotate(90deg);
-        }
-        100% {
-            transform: scale(1) rotate(0deg);
-        }
-    }
-
-    .cell-revealed {
-        background-color: #1f2937;
-        border: 1px solid #374151;
-        box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-        animation: cell-reveal 0.15s ease-out;
-    }
-
-    @@keyframes cell-reveal {
-        0% {
-            transform: scale(0.95);
-            opacity: 0.7;
-        }
-        100% {
-            transform: scale(1);
-            opacity: 1;
-        }
-    }
-
-    /* Number colors */
-    .mine-count-1 { color: #60a5fa; }
-    .mine-count-2 { color: #34d399; }
-    .mine-count-3 { color: #f87171; }
-    .mine-count-4 { color: #a78bfa; }
-    .mine-count-5 { color: #fbbf24; }
-    .mine-count-6 { color: #f472b6; }
-    .mine-count-7 { color: #d1d5db; }
-    .mine-count-8 { color: #f3f4f6; }
-
     /* ===== GAME BOARD ===== */
     .game-board {
         display: inline-grid;
@@ -138,23 +53,6 @@
         }
     }
 
-    /* ===== FLAGS ===== */
-    .flag-animation {
-        animation: flag-place 0.3s ease-out;
-    }
-
-    @@keyframes flag-place {
-        0% {
-            transform: scale(0) rotate(-180deg);
-        }
-        50% {
-            transform: scale(1.2) rotate(-90deg);
-        }
-        100% {
-            transform: scale(1) rotate(0deg);
-        }
-    }
-
     @@keyframes fade-in {
         from { opacity: 0; }
         to { opacity: 1; }
@@ -166,12 +64,6 @@
             gap: 0.125rem;
             padding: 0.5rem;
         }
-
-        .cell-button {
-            width: 1.5rem;
-            height: 1.5rem;
-            font-size: 0.75rem;
-        }
     }
 </style>
 
@@ -179,7 +71,7 @@
 {
     <div class="relative">
         <div class="overflow-auto max-h-[70vh] rounded-xl shadow-2xl">
-            <div class="game-board" 
+            <div class="game-board"
                  style="grid-template-columns: repeat(@GameService.CurrentGame.Columns, minmax(0, 1fr));">
                 @for (int row = 0; row < GameService.CurrentGame.Rows; row++)
                 {
@@ -188,25 +80,24 @@
                         var r = row;
                         var c = col;
                         var cell = GameService.CurrentGame.Board[r, c];
-                        
-                        <button @key="@(r * GameService.CurrentGame.Columns + c)"
-                                @onclick="(e) => HandleCellClick(r, c, e)"
-                                @oncontextmenu="(e) => HandleRightClick(r, c, e)"
-                                @oncontextmenu:preventDefault="true"
-                                @ondblclick="() => HandleDoubleClick(r, c)"
-                                class="cell-button @GetCellClass(cell)"
-                                disabled="@(GameService.CurrentGame.Status != GameStatus.InProgress && GameService.CurrentGame.Status != GameStatus.NotStarted)"
-                                id="cell-@r-@c">
-                            <span class="@(cell.IsFlagged && !cell.IsRevealed ? "flag-animation" : "")">
-                                @GetCellContent(cell)
-                            </span>
-                        </button>
+
+                        <GameCell @key="@(r * GameService.CurrentGame.Columns + c)"
+                                  Row="r"
+                                  Col="c"
+                                  IsRevealed="cell.IsRevealed"
+                                  IsFlagged="cell.IsFlagged"
+                                  IsMine="cell.IsMine"
+                                  AdjacentMines="cell.AdjacentMines"
+                                  Disabled="@(GameService.CurrentGame.Status != GameStatus.InProgress && GameService.CurrentGame.Status != GameStatus.NotStarted)"
+                                  OnClick="(e) => HandleCellClick(r, c, e)"
+                                  OnRightClick="(e) => HandleRightClick(r, c, e)"
+                                  OnDoubleClick="() => HandleDoubleClick(r, c)" />
                     }
                 }
             </div>
         </div>
-        
-        @if (GameService.CurrentGame != null && 
+
+        @if (GameService.CurrentGame != null &&
              GameService.CurrentGame.CreatedAt == _currentGameCreatedAt &&
              (GameService.CurrentGame.Status == GameStatus.Won || GameService.CurrentGame.Status == GameStatus.Lost))
         {
@@ -235,9 +126,9 @@
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
-    
+
     private DateTime _currentGameCreatedAt = DateTime.MinValue;
-    
+
     protected override void OnInitialized()
     {
         GameService.OnGameStateChanged += OnGameStateChanged;
@@ -246,7 +137,7 @@
             _currentGameCreatedAt = GameService.CurrentGame.CreatedAt;
         }
     }
-    
+
     protected override void OnParametersSet()
     {
         // Update the current game reference when parameters change
@@ -256,7 +147,7 @@
             _hasPlayedWinEffect = false;
         }
     }
-    
+
     private void OnGameStateChanged()
     {
         // Update the current game reference
@@ -266,14 +157,14 @@
         }
         InvokeAsync(StateHasChanged);
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("ParticleEffects.init");
         }
-        
+
         // Check for game over states and trigger effects
         if (GameService.CurrentGame != null)
         {
@@ -288,23 +179,23 @@
             }
         }
     }
-    
+
     private bool _hasPlayedWinEffect = false;
-    
+
     private async void HandleCellClick(int row, int col, MouseEventArgs e)
     {
         var previousStatus = GameService.CurrentGame?.Status;
         var cell = GameService.CurrentGame?.Board[row, col];
         var wasMine = cell?.IsMine ?? false;
         var wasRevealed = cell?.IsRevealed ?? false;
-        
+
         GameService.RevealCell(row, col);
-        
-        if (GameService.CurrentGame?.Status == GameStatus.InProgress || 
+
+        if (GameService.CurrentGame?.Status == GameStatus.InProgress ||
             (previousStatus == GameStatus.NotStarted && GameService.CurrentGame?.Status == GameStatus.InProgress))
         {
             await SoundService.PlayClickAsync();
-            
+
             // Only add sparkle effect for single cell reveals (not batch reveals)
             if (!wasMine && !wasRevealed && GameService.CurrentGame?.Status == GameStatus.InProgress)
             {
@@ -316,67 +207,31 @@
                 }
             }
         }
-        
+
         // Add explosion effect if mine was hit
         if (wasMine && GameService.CurrentGame?.Status == GameStatus.Lost)
         {
             await JSRuntime.InvokeVoidAsync("ParticleEffects.createExplosion", e.ClientX, e.ClientY);
         }
     }
-    
+
     private async void HandleRightClick(int row, int col, MouseEventArgs e)
     {
         GameService.ToggleFlag(row, col);
         await SoundService.PlayClickAsync();
     }
-    
+
     private async void HandleDoubleClick(int row, int col)
     {
         GameService.RevealAdjacentIfSafe(row, col);
         await SoundService.PlayClickAsync();
     }
-    
-    private string GetCellClass(Cell cell)
-    {
-        if (!cell.IsRevealed)
-        {
-            return "cell-unrevealed";
-        }
-        
-        if (cell.IsMine)
-        {
-            return "cell-mine";
-        }
-        
-        var numberClass = cell.AdjacentMines > 0 ? $" mine-count-{cell.AdjacentMines}" : "";
-        return $"cell-revealed{numberClass}";
-    }
-    
-    private string GetCellContent(Cell cell)
-    {
-        if (!cell.IsRevealed && cell.IsFlagged)
-        {
-            return "🚩";
-        }
-        
-        if (!cell.IsRevealed)
-        {
-            return "";
-        }
-        
-        if (cell.IsMine)
-        {
-            return "💣";
-        }
-        
-        return cell.AdjacentMines > 0 ? cell.AdjacentMines.ToString() : "";
-    }
-    
+
     private string FormatTime(TimeSpan time)
     {
         return $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";
     }
-    
+
     public void Dispose()
     {
         GameService.OnGameStateChanged -= OnGameStateChanged;

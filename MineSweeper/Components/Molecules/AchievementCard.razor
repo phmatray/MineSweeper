@@ -1,0 +1,65 @@
+@* Molecule: AchievementCard - Display achievement with icon and details *@
+
+<div class="achievement-card @(IsUnlocked ? "achievement-unlocked" : "achievement-locked")">
+    <div class="flex items-start gap-3">
+        <span class="text-3xl @(!IsUnlocked ? "grayscale opacity-50" : "")">@Icon</span>
+        <div class="flex-1">
+            <h3 class="font-semibold @(IsUnlocked ? "text-white" : "text-gray-400")">
+                @Name
+            </h3>
+            <p class="text-sm @(IsUnlocked ? "text-gray-300" : "text-gray-500")">
+                @Description
+            </p>
+            @if (IsUnlocked && UnlockedAt.HasValue)
+            {
+                <p class="text-xs text-gray-400 mt-1">
+                    Unlocked @UnlockedAt.Value.ToString("MMM d, yyyy")
+                </p>
+            }
+            else if (!IsUnlocked && !string.IsNullOrEmpty(Category))
+            {
+                <div class="mt-2">
+                    <span class="text-xs text-gray-500 bg-gray-700 px-2 py-1 rounded-sm">
+                        @CategoryIcon @Category
+                    </span>
+                </div>
+            }
+        </div>
+        @if (IsUnlocked)
+        {
+            <div class="text-green-400 text-2xl">
+                ✓
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .achievement-card {
+        border-radius: 0.75rem;
+        padding: 1rem;
+        transition: all 300ms;
+    }
+
+    .achievement-locked {
+        background-color: #111827;
+        border: 2px solid #374151;
+        opacity: 0.75;
+    }
+
+    .achievement-unlocked {
+        background: linear-gradient(to bottom right, #374151, #1f2937);
+        border: 2px solid rgba(217, 119, 6, 0.5);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    [Parameter, EditorRequired] public string Description { get; set; } = "";
+    [Parameter, EditorRequired] public string Icon { get; set; } = "";
+    [Parameter] public bool IsUnlocked { get; set; }
+    [Parameter] public DateTime? UnlockedAt { get; set; }
+    [Parameter] public string? Category { get; set; }
+    [Parameter] public string? CategoryIcon { get; set; }
+}
