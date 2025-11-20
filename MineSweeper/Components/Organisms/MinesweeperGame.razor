@@ -7,21 +7,21 @@
 @inject NavigationManager NavigationManager
 @implements IDisposable
 
-<div class="p-4">
-    <div class="max-w-6xl mx-auto">
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-blue-500/20">
+<div class="p-4 md:p-6 lg:p-8 min-h-screen">
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="glass-strong rounded-2xl shadow-2xl overflow-hidden border border-blue-500/20 transition-smooth">
             <div class="bg-gradient-to-r from-blue-600/20 via-cyan-600/20 to-blue-600/20 p-6 text-center border-b border-blue-500/20">
                 <h1 class="text-3xl md:text-4xl font-bold text-white flex items-center justify-center gap-3">
                     <span class="text-5xl animate-bounce">💣</span>
                     <span class="bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-300 bg-clip-text text-transparent">Play MineSweeper</span>
                 </h1>
             </div>
-            
-            <div class="p-6 space-y-6">
+
+            <div class="p-6 md:p-8 space-y-6">
                 @if (_gameRestored)
                 {
-                    <div class="mx-auto max-w-lg">
-                        <div class="p-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl text-center shadow-lg animate-pulse border border-blue-400/30">
+                    <div class="mx-auto max-w-lg animate-gentle-pulse">
+                        <div class="p-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl text-center shadow-lg border border-blue-400/30">
                             <p class="font-semibold flex items-center justify-center gap-2">
                                 <span class="text-2xl">✨</span>
                                 Previous game restored!
@@ -30,24 +30,24 @@
                         </div>
                     </div>
                 }
-                
-                <div class="text-center space-y-4">
-                    <DifficultySelector 
+
+                <div class="text-center space-y-6">
+                    <DifficultySelector
                         CurrentDifficulty="@GameService.CurrentGame?.Difficulty"
                         OnDifficultySelected="StartNewGame" />
-                    
+
                     <GameStats OnReset="ResetCurrentGame" />
                 </div>
-                
+
                 @if (GameService.CurrentGame != null)
                 {
-                    <div class="flex justify-center" @key="@GameService.CurrentGame.CreatedAt">
+                    <div class="flex justify-center items-center py-4" @key="@GameService.CurrentGame.CreatedAt">
                         <GameBoard />
                     </div>
                 }
                 else
                 {
-                    <div class="text-center py-16">
+                    <div class="text-center py-16 px-4">
                         <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-full mb-4 animate-bounce border-2 border-blue-500/30 shadow-xl shadow-blue-500/20">
                             <span class="text-5xl">💣</span>
                         </div>
@@ -59,16 +59,16 @@
         </div>
 
         <!-- Quick Game Info -->
-        <div class="mt-6 bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 border border-blue-500/20">
+        <div class="glass-light rounded-xl p-4 md:p-5 border border-blue-500/20 transition-smooth card-elevated">
             <div class="flex flex-wrap justify-between items-center gap-4">
                 <div class="flex items-center gap-6">
                     <button @onclick="ToggleSound"
-                            class="flex items-center gap-2 text-blue-200 hover:text-white transition-all hover:scale-105">
+                            class="flex items-center gap-2 text-blue-200 hover:text-white transition-smooth hover:scale-105">
                         <span class="text-xl">@(SoundService.SoundEnabled ? "🔊" : "🔇")</span>
                         <span class="text-sm">Sound @(SoundService.SoundEnabled ? "On" : "Off")</span>
                     </button>
                     <button @onclick="ShowHelp"
-                            class="flex items-center gap-2 text-blue-200 hover:text-white transition-all hover:scale-105">
+                            class="flex items-center gap-2 text-blue-200 hover:text-white transition-smooth hover:scale-105">
                         <span class="text-xl">❓</span>
                         <span class="text-sm">Help</span>
                     </button>
@@ -89,13 +89,13 @@
     private System.Threading.Timer? _timer;
     private bool _gameRestored = false;
     private bool _showHelp = false;
-    
+
     protected override async Task OnInitializedAsync()
     {
         GameService.OnGameStateChanged += OnGameStateChanged;
         SoundService.OnSoundToggled += OnSoundToggled;
         _timer = new System.Threading.Timer(_ => InvokeAsync(StateHasChanged), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
-        
+
         // Check if we have a pending game to start after reload
         try
         {
@@ -112,7 +112,7 @@
             }
         }
         catch { }
-        
+
         // Load saved game if exists
         var savedGame = await PersistenceService.LoadGameStateAsync();
         if (savedGame != null && savedGame.Status == GameStatus.InProgress)
@@ -120,21 +120,21 @@
             GameService.LoadGame(savedGame);
             _gameRestored = true;
             // Hide message after 3 seconds
-            _ = Task.Delay(3000).ContinueWith(_ => 
+            _ = Task.Delay(3000).ContinueWith(_ =>
             {
                 _gameRestored = false;
                 InvokeAsync(StateHasChanged);
             });
         }
     }
-    
+
     private async void OnGameStateChanged()
     {
         await InvokeAsync(StateHasChanged);
 
         // Save game state
         await PersistenceService.SaveGameStateAsync();
-        
+
         if (GameService.CurrentGame != null)
         {
             if (GameService.CurrentGame.Status == GameStatus.Won)
@@ -149,26 +149,26 @@
             }
         }
     }
-    
+
     private async void StartNewGame(GameDifficulty difficulty)
     {
         // Check if we need to force reload (when game is over)
-        if (GameService.CurrentGame != null && 
+        if (GameService.CurrentGame != null &&
             (GameService.CurrentGame.Status == GameStatus.Won || GameService.CurrentGame.Status == GameStatus.Lost))
         {
             // Save the difficulty to start after reload
             await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "pendingGameDifficulty", difficulty.ToString());
-            
+
             // Force page reload
             NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
             return;
         }
-        
+
         // Normal new game start (first game or resetting during play)
         GameService.NewGame(difficulty);
         await SoundService.PlayStartAsync();
     }
-    
+
     private void ResetCurrentGame()
     {
         if (GameService.CurrentGame != null)
@@ -176,22 +176,22 @@
             StartNewGame(GameService.CurrentGame.Difficulty);
         }
     }
-    
+
     private void ShowHelp()
     {
         _showHelp = true;
     }
-    
+
     private void ToggleSound()
     {
         SoundService.SoundEnabled = !SoundService.SoundEnabled;
     }
-    
+
     private void OnSoundToggled(bool isEnabled)
     {
         InvokeAsync(StateHasChanged);
     }
-    
+
     public void Dispose()
     {
         GameService.OnGameStateChanged -= OnGameStateChanged;

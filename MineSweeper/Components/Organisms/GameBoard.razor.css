@@ -1,15 +1,61 @@
 /* Organism: GameBoard - Component-scoped styles */
 
 .game-board {
-    display: inline-grid;
+    display: grid;
     grid-template-columns: repeat(var(--grid-columns, 10), minmax(0, 1fr));
     gap: 0.125rem;
     padding: 1.25rem;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+
+    /* Modern glassmorphism background */
+    background: linear-gradient(135deg,
+            rgba(15, 23, 42, 0.95) 0%,
+            rgba(30, 41, 59, 0.9) 50%,
+            rgba(15, 23, 42, 0.95) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    /* Enhanced shadows for depth */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6),
+        0 10px 20px -5px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(59, 130, 246, 0.15),
+        inset 0 -2px 4px rgba(6, 182, 212, 0.1),
+        0 0 0 1px rgba(59, 130, 246, 0.1);
+
     border-radius: 1rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                inset 0 2px 4px rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+
+    /* Smooth transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Subtle inner glow */
+    position: relative;
+}
+
+.game-board::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    padding: 1px;
+    background: linear-gradient(135deg,
+            rgba(59, 130, 246, 0.3) 0%,
+            rgba(6, 182, 212, 0.2) 50%,
+            rgba(59, 130, 246, 0.3) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.game-board:hover {
+    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7),
+        0 15px 25px -5px rgba(0, 0, 0, 0.5),
+        inset 0 2px 4px rgba(59, 130, 246, 0.2),
+        inset 0 -2px 4px rgba(6, 182, 212, 0.15),
+        0 0 0 1px rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.35);
 }
 
 @media (max-width: 640px) {
@@ -49,9 +95,11 @@
         transform: scale(0);
         opacity: 0;
     }
+
     50% {
         transform: scale(1.1);
     }
+
     100% {
         transform: scale(1);
         opacity: 1;
@@ -62,6 +110,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
