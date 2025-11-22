@@ -29,16 +29,18 @@
 
         <!-- Category Filter -->
         <div class="flex flex-wrap gap-2 mb-6">
-            <button @onclick="() => SetFilter(null)"
-                    class="@GetFilterClass(null)">
+            <Button OnClick="() => SetFilter(null)"
+                    Variant="@(_selectedCategory == null ? ButtonVariant.Primary : ButtonVariant.Secondary)"
+                    AriaLabel="Show all achievements">
                 All
-            </button>
+            </Button>
             @foreach (var category in Enum.GetValues<AchievementCategory>())
             {
-                <button @onclick="() => SetFilter(category)"
-                        class="@GetFilterClass(category)">
+                <Button OnClick="() => SetFilter(category)"
+                        Variant="@(_selectedCategory == category ? ButtonVariant.Primary : ButtonVariant.Secondary)"
+                        AriaLabel="@($"Filter by {category}")">
                     @GetCategoryIcon(category) @category
-                </button>
+                </Button>
             }
         </div>
 
@@ -153,15 +155,6 @@
                           .ThenBy(a => a.Name);
     }
 
-    private string GetFilterClass(AchievementCategory? category)
-    {
-        var baseClass = "px-4 py-2 rounded-lg font-semibold transition-all ";
-        if (_selectedCategory == category)
-        {
-            return baseClass + "bg-blue-600 text-white";
-        }
-        return baseClass + "bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white";
-    }
 
 
     private string GetCategoryIcon(AchievementCategory category)

@@ -10,9 +10,11 @@
                         <span>📖</span>
                         How to Play Minesweeper
                     </h2>
-                    <button @onclick="Close" class="text-gray-400 hover:text-white transition-colors text-2xl">
-                        ✕
-                    </button>
+                    <Button OnClick="Close"
+                            Variant="ButtonVariant.Icon"
+                            AriaLabel="Close help modal">
+                        <span class="text-2xl">✕</span>
+                    </Button>
                 </div>
             </div>
             

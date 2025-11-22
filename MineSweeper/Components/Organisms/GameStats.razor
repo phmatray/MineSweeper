@@ -10,12 +10,13 @@
                 <div class="text-xs text-gray-400 uppercase">Mines</div>
             </div>
         </div>
-        
-        <button @onclick="Reset" 
-                class="text-5xl hover:scale-110 transition-transform active:scale-95"
-                title="New game">
+
+        <Button OnClick="Reset"
+                Variant="ButtonVariant.Icon"
+                AdditionalClasses="text-5xl"
+                AriaLabel="New game">
             @GetFaceEmoji()
-        </button>
+        </Button>
         
         <div class="bg-gray-900 px-6 py-3 rounded-xl flex items-center gap-3 shadow-inner">
             <span class="text-2xl">⏱️</span>

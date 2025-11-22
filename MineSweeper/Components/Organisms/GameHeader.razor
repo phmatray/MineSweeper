@@ -13,17 +13,19 @@
         </div>
         
         <div class="flex items-center gap-3">
-            <button @onclick="ToggleSound" 
-                    class="p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all hover:scale-110"
-                    title="@(SoundService.SoundEnabled ? "Mute sounds" : "Enable sounds")">
+            <Button OnClick="ToggleSound"
+                    Variant="ButtonVariant.Icon"
+                    AdditionalClasses="bg-gray-700 hover:bg-gray-600"
+                    AriaLabel="@(SoundService.SoundEnabled ? "Mute sounds" : "Enable sounds")">
                 <span class="text-xl">@(SoundService.SoundEnabled ? "🔊" : "🔇")</span>
-            </button>
-            
-            <button @onclick="ShowHelp" 
-                    class="p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all hover:scale-110"
-                    title="How to play">
+            </Button>
+
+            <Button OnClick="ShowHelp"
+                    Variant="ButtonVariant.Icon"
+                    AdditionalClasses="bg-gray-700 hover:bg-gray-600"
+                    AriaLabel="How to play">
                 <span class="text-xl">❓</span>
-            </button>
+            </Button>
         </div>
     </div>
 </div>

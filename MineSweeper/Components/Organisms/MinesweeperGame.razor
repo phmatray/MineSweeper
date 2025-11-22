@@ -63,16 +63,18 @@
             <div class="glass-light rounded-xl p-4 border border-blue-500/20 transition-smooth card-elevated">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex items-center gap-4 sm:gap-6">
-                        <button @onclick="ToggleSound"
-                                class="flex items-center gap-2 text-blue-200 hover:text-white transition-smooth hover:scale-105">
+                        <Button OnClick="ToggleSound"
+                                Variant="ButtonVariant.Ghost"
+                                AriaLabel="Toggle sound">
                             <span class="text-xl sm:text-2xl">@(SoundService.SoundEnabled ? "🔊" : "🔇")</span>
                             <span class="text-sm sm:text-base">Sound @(SoundService.SoundEnabled ? "On" : "Off")</span>
-                        </button>
-                        <button @onclick="ShowHelp"
-                                class="flex items-center gap-2 text-blue-200 hover:text-white transition-smooth hover:scale-105">
+                        </Button>
+                        <Button OnClick="ShowHelp"
+                                Variant="ButtonVariant.Ghost"
+                                AriaLabel="Show help">
                             <span class="text-xl sm:text-2xl">❓</span>
                             <span class="text-sm sm:text-base">Help</span>
-                        </button>
+                        </Button>
                     </div>
                     <div class="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-blue-300/80">
                         <span>Win Rate: <span class="text-cyan-300 font-semibold">@AchievementService.Statistics.WinRate.ToString("F0")%</span></span>
