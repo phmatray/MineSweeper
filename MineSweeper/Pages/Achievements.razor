@@ -5,43 +5,43 @@
 
 <PageTitle>Achievements - MineSweeper</PageTitle>
 
-<div class="max-w-6xl mx-auto p-4">
-    <div class="bg-gray-800 rounded-2xl shadow-2xl p-6">
+<div class="mx-auto px-4 sm:px-6 lg:px-8 py-4 max-w-7xl">
+    <div class="bg-gray-800 rounded-2xl shadow-2xl p-5">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <h1 class="text-3xl font-bold text-white flex items-center gap-3">
-                <span class="text-4xl">🏆</span>
+            <h1 class="text-3xl sm:text-4xl font-bold text-white flex items-center gap-3">
+                <span class="text-4xl sm:text-5xl">🏆</span>
                 Achievements
             </h1>
-            
+
             <div class="flex items-center gap-4">
                 <div class="text-right">
-                    <p class="text-2xl font-bold text-white">
+                    <p class="text-2xl sm:text-3xl font-bold text-white">
                         @AchievementService.GetAchievementProgress() / @AchievementService.GetTotalAchievements()
                     </p>
                     <p class="text-sm text-gray-400">Unlocked</p>
                 </div>
-                <div class="w-32 progress-bar">
+                <div class="w-32 sm:w-40 progress-bar">
                     <div class="progress-fill gradient-yellow"
                          style="--progress-width: @((double)AchievementService.GetAchievementProgress() / AchievementService.GetTotalAchievements() * 100)%"></div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Category Filter -->
         <div class="flex flex-wrap gap-2 mb-6">
-            <button @onclick="() => SetFilter(null)" 
+            <button @onclick="() => SetFilter(null)"
                     class="@GetFilterClass(null)">
                 All
             </button>
             @foreach (var category in Enum.GetValues<AchievementCategory>())
             {
-                <button @onclick="() => SetFilter(category)" 
+                <button @onclick="() => SetFilter(category)"
                         class="@GetFilterClass(category)">
                     @GetCategoryIcon(category) @category
                 </button>
             }
         </div>
-        
+
         <!-- Achievements Grid -->
         <div class="grid md:grid-cols-2 gap-4">
             @foreach (var achievement in GetFilteredAchievements())
@@ -83,17 +83,17 @@
                 </div>
             }
         </div>
-        
+
         <!-- Summary Stats -->
-        <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
             @foreach (var category in Enum.GetValues<AchievementCategory>())
             {
                 var categoryAchievements = MineSweeper.Engine.Models.Achievements.All.Where(a => a.Category == category).ToList();
                 var unlockedCount = categoryAchievements.Count(a => a.IsUnlocked);
-                
-                <div class="bg-gray-700 rounded-lg p-4 text-center">
-                    <p class="text-2xl mb-1">@GetCategoryIcon(category)</p>
-                    <p class="text-lg font-bold text-white">@unlockedCount / @categoryAchievements.Count</p>
+
+                <div class="bg-gray-700 rounded-lg p-4 text-center transition-all duration-200 hover:bg-gray-600">
+                    <p class="text-2xl sm:text-3xl mb-1">@GetCategoryIcon(category)</p>
+                    <p class="text-lg sm:text-xl font-bold text-white">@unlockedCount / @categoryAchievements.Count</p>
                     <p class="text-sm text-gray-400">@category</p>
                 </div>
             }
@@ -118,17 +118,17 @@
     private Achievement? _recentAchievement;
     private System.Threading.Timer? _notificationTimer;
     private AchievementCategory? _selectedCategory = null;
-    
+
     protected override void OnInitialized()
     {
         AchievementService.OnAchievementUnlocked += OnAchievementUnlocked;
     }
-    
+
     private void OnAchievementUnlocked(Achievement achievement)
     {
         _recentAchievement = achievement;
         InvokeAsync(StateHasChanged);
-        
+
         _notificationTimer?.Dispose();
         _notificationTimer = new System.Threading.Timer(_ =>
         {
@@ -136,23 +136,23 @@
             InvokeAsync(StateHasChanged);
         }, null, TimeSpan.FromSeconds(5), Timeout.InfiniteTimeSpan);
     }
-    
+
     private void SetFilter(AchievementCategory? category)
     {
         _selectedCategory = category;
     }
-    
+
     private IEnumerable<Achievement> GetFilteredAchievements()
     {
         var achievements = _selectedCategory.HasValue
             ? MineSweeper.Engine.Models.Achievements.All.Where(a => a.Category == _selectedCategory.Value)
             : MineSweeper.Engine.Models.Achievements.All;
-            
+
         return achievements.OrderByDescending(a => a.IsUnlocked)
                           .ThenBy(a => a.Category)
                           .ThenBy(a => a.Name);
     }
-    
+
     private string GetFilterClass(AchievementCategory? category)
     {
         var baseClass = "px-4 py-2 rounded-lg font-semibold transition-all ";
@@ -162,8 +162,8 @@
         }
         return baseClass + "bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white";
     }
-    
-    
+
+
     private string GetCategoryIcon(AchievementCategory category)
     {
         return category switch
@@ -175,7 +175,7 @@
             _ => "🏆"
         };
     }
-    
+
     public void Dispose()
     {
         AchievementService.OnAchievementUnlocked -= OnAchievementUnlocked;

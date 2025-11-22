@@ -5,16 +5,16 @@
 
 <PageTitle>Statistics - MineSweeper</PageTitle>
 
-<div class="max-w-6xl mx-auto p-4">
-    <div class="bg-gray-800 rounded-2xl shadow-2xl p-6">
-        <h1 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-            <span class="text-4xl">📊</span>
+<div class="mx-auto px-4 sm:px-6 lg:px-8 py-4 max-w-7xl">
+    <div class="bg-gray-800 rounded-2xl shadow-2xl p-5">
+        <h1 class="text-3xl sm:text-4xl font-bold text-white mb-6 flex items-center gap-3">
+            <span class="text-4xl sm:text-5xl">📊</span>
             Game Statistics
         </h1>
-        
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Overall Performance -->
-            <div class="bg-gray-700 rounded-xl p-6">
+            <div class="bg-gray-700 rounded-xl p-4 transition-all duration-200 hover:bg-gray-650">
                 <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                     <span>🎯</span>
                     Overall Performance
@@ -46,9 +46,9 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Streaks -->
-            <div class="bg-gray-700 rounded-xl p-6">
+            <div class="bg-gray-700 rounded-xl p-4 transition-all duration-200 hover:bg-gray-650">
                 <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                     <span>🔥</span>
                     Win Streaks
@@ -70,9 +70,9 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Best Times -->
-            <div class="bg-gray-700 rounded-xl p-6">
+            <div class="bg-gray-700 rounded-xl p-4 transition-all duration-200 hover:bg-gray-650">
                 <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                     <span>⏱️</span>
                     Best Times
@@ -84,8 +84,8 @@
                             Beginner
                         </span>
                         <span class="font-mono text-xl text-white">
-                            @(AchievementService.Statistics.BeginnerStats.BestTime.HasValue 
-                                ? FormatTime(AchievementService.Statistics.BeginnerStats.BestTime.Value) 
+                            @(AchievementService.Statistics.BeginnerStats.BestTime.HasValue
+                                ? FormatTime(AchievementService.Statistics.BeginnerStats.BestTime.Value)
                                 : "--:--")
                         </span>
                     </div>
@@ -95,8 +95,8 @@
                             Intermediate
                         </span>
                         <span class="font-mono text-xl text-white">
-                            @(AchievementService.Statistics.IntermediateStats.BestTime.HasValue 
-                                ? FormatTime(AchievementService.Statistics.IntermediateStats.BestTime.Value) 
+                            @(AchievementService.Statistics.IntermediateStats.BestTime.HasValue
+                                ? FormatTime(AchievementService.Statistics.IntermediateStats.BestTime.Value)
                                 : "--:--")
                         </span>
                     </div>
@@ -106,20 +106,20 @@
                             Expert
                         </span>
                         <span class="font-mono text-xl text-white">
-                            @(AchievementService.Statistics.ExpertStats.BestTime.HasValue 
-                                ? FormatTime(AchievementService.Statistics.ExpertStats.BestTime.Value) 
+                            @(AchievementService.Statistics.ExpertStats.BestTime.HasValue
+                                ? FormatTime(AchievementService.Statistics.ExpertStats.BestTime.Value)
                                 : "--:--")
                         </span>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Difficulty Breakdown -->
-        <div class="mt-6 grid md:grid-cols-3 gap-6">
+        <div class="mt-6 grid md:grid-cols-3 gap-4">
             @foreach (var (difficulty, stats, color, icon) in GetDifficultyData())
             {
-                <div class="bg-gray-700 rounded-xl p-6">
+                <div class="bg-gray-700 rounded-xl p-4 transition-all duration-200 hover:bg-gray-650">
                     <h3 class="text-lg font-semibold text-white mb-3 flex items-center gap-2">
                         <span class="text-2xl">@icon</span>
                         @difficulty
@@ -149,36 +149,36 @@
                 </div>
             }
         </div>
-        
+
         <!-- Fun Facts -->
-        <div class="mt-6 bg-gray-700 rounded-xl p-6">
-            <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <div class="mt-6 bg-gray-700 rounded-xl p-4">
+            <h2 class="text-xl font-semibold text-white mb-5 flex items-center gap-2">
                 <span>🎲</span>
                 Fun Facts
             </h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="text-center">
-                    <p class="text-3xl font-bold text-blue-400">@AchievementService.Statistics.TotalCellsRevealed</p>
-                    <p class="text-sm text-gray-400">Cells Revealed</p>
+                    <p class="text-3xl sm:text-4xl font-bold text-blue-400">@AchievementService.Statistics.TotalCellsRevealed</p>
+                    <p class="text-sm text-gray-400 mt-1">Cells Revealed</p>
                 </div>
                 <div class="text-center">
-                    <p class="text-3xl font-bold text-purple-400">@AchievementService.Statistics.TotalFlagsPlaced</p>
-                    <p class="text-sm text-gray-400">Flags Placed</p>
+                    <p class="text-3xl sm:text-4xl font-bold text-purple-400">@AchievementService.Statistics.TotalFlagsPlaced</p>
+                    <p class="text-sm text-gray-400 mt-1">Flags Placed</p>
                 </div>
                 <div class="text-center">
-                    <p class="text-3xl font-bold text-green-400">@AchievementService.Statistics.LargestFirstClick</p>
-                    <p class="text-sm text-gray-400">Largest First Click</p>
+                    <p class="text-3xl sm:text-4xl font-bold text-green-400">@AchievementService.Statistics.LargestFirstClick</p>
+                    <p class="text-sm text-gray-400 mt-1">Largest First Click</p>
                 </div>
                 <div class="text-center">
-                    <p class="text-3xl font-bold text-yellow-400">@AchievementService.Statistics.GamesWonWithoutFlags</p>
-                    <p class="text-sm text-gray-400">No-Flag Wins</p>
+                    <p class="text-3xl sm:text-4xl font-bold text-yellow-400">@AchievementService.Statistics.GamesWonWithoutFlags</p>
+                    <p class="text-sm text-gray-400 mt-1">No-Flag Wins</p>
                 </div>
             </div>
         </div>
-        
+
         @if (AchievementService.Statistics.LastPlayedAt.HasValue)
         {
-            <p class="text-center text-gray-500 text-sm mt-4">
+            <p class="text-center text-gray-500 text-sm mt-5">
                 Last played: @AchievementService.Statistics.LastPlayedAt.Value.ToString("MMM d, yyyy h:mm tt")
             </p>
         }
@@ -190,12 +190,12 @@
     {
         AchievementService.OnStatisticsUpdated += OnStatisticsUpdated;
     }
-    
+
     private void OnStatisticsUpdated()
     {
         InvokeAsync(StateHasChanged);
     }
-    
+
     private string GetWinRateColor()
     {
         return AchievementService.Statistics.WinRate switch
@@ -206,7 +206,7 @@
             _ => "text-red-400"
         };
     }
-    
+
     private List<(string Name, DifficultyStatistics Stats, string Color, string Icon)> GetDifficultyData()
     {
         return new()
@@ -216,12 +216,12 @@
             ("Expert", AchievementService.Statistics.ExpertStats, "red", "💀")
         };
     }
-    
+
     private string FormatTime(TimeSpan time)
     {
         return $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";
     }
-    
+
     private string FormatPlayTime(TimeSpan time)
     {
         if (time.TotalDays >= 1)
@@ -231,7 +231,7 @@
         else
             return $"{(int)time.TotalMinutes}m {time.Seconds}s";
     }
-    
+
     public void Dispose()
     {
         AchievementService.OnStatisticsUpdated -= OnStatisticsUpdated;
