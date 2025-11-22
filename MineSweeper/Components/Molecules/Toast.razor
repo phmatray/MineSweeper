@@ -1,0 +1,132 @@
+@namespace MineSweeper.Components.Molecules
+
+@if (IsVisible)
+{
+    <div class="@GetToastClasses()" @attributes="AdditionalAttributes">
+        <Stack Direction="Stack.StackDirection.Row" Align="Stack.StackAlign.Center" Gap="Stack.StackGap.Medium">
+            @if (!string.IsNullOrWhiteSpace(Icon))
+            {
+                <span class="text-2xl">@Icon</span>
+            }
+            <Stack Direction="Stack.StackDirection.Column" Gap="Stack.StackGap.ExtraSmall" Class="flex-1">
+                @if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <div class="font-semibold text-white">@Title</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Message))
+                {
+                    <div class="text-sm text-gray-300">@Message</div>
+                }
+                @ChildContent
+            </Stack>
+            @if (Dismissible)
+            {
+                <button @onclick="Dismiss"
+                        class="text-gray-400 hover:text-white transition-colors ml-2"
+                        aria-label="Close notification">
+                    <span class="text-xl">&times;</span>
+                </button>
+            }
+        </Stack>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    [Parameter]
+    public ToastType Type { get; set; } = ToastType.Info;
+
+    [Parameter]
+    public bool IsVisible { get; set; } = true;
+
+    [Parameter]
+    public bool Dismissible { get; set; } = true;
+
+    [Parameter]
+    public int? AutoDismissMs { get; set; }
+
+    [Parameter]
+    public EventCallback OnDismiss { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private Timer? _autoDismissTimer;
+
+    protected override void OnParametersSet()
+    {
+        if (IsVisible && AutoDismissMs.HasValue && AutoDismissMs.Value > 0)
+        {
+            _autoDismissTimer?.Dispose();
+            _autoDismissTimer = new Timer(async _ => await Dismiss(), null, AutoDismissMs.Value, Timeout.Infinite);
+        }
+    }
+
+    private async Task Dismiss()
+    {
+        IsVisible = false;
+        await OnDismiss.InvokeAsync();
+        StateHasChanged();
+    }
+
+    private string GetToastClasses()
+    {
+        var classes = new List<string>
+        {
+            "toast-notification",
+            "rounded-xl",
+            "p-4",
+            "shadow-2xl",
+            "backdrop-blur-md",
+            "border",
+            "transition-all",
+            "duration-300",
+            "animate-slide-in-right"
+        };
+
+        // Type-specific styles
+        classes.Add(Type switch
+        {
+            ToastType.Success => "bg-green-500/20 border-green-500/50 text-green-100",
+            ToastType.Error => "bg-red-500/20 border-red-500/50 text-red-100",
+            ToastType.Warning => "bg-yellow-500/20 border-yellow-500/50 text-yellow-100",
+            ToastType.Info => "bg-blue-500/20 border-blue-500/50 text-blue-100",
+            _ => "bg-gray-500/20 border-gray-500/50 text-gray-100"
+        });
+
+        // Additional custom classes
+        if (!string.IsNullOrWhiteSpace(Class))
+        {
+            classes.Add(Class);
+        }
+
+        return string.Join(" ", classes.Where(c => !string.IsNullOrWhiteSpace(c)));
+    }
+
+    public void Dispose()
+    {
+        _autoDismissTimer?.Dispose();
+    }
+
+    public enum ToastType
+    {
+        Success,
+        Error,
+        Warning,
+        Info
+    }
+}

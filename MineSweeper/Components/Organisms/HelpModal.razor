@@ -1,118 +1,82 @@
-@if (IsVisible)
-{
-    <div class="modal-overlay"
-         @onclick="Close">
-        <div class="modal-content @(_isClosing ? "scale-95 opacity-0" : "scale-100 opacity-100")"
-             @onclick:stopPropagation="true">
-            <div class="bg-gradient-to-r from-gray-700 to-gray-800 p-6 border-b border-gray-700">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                        <span>📖</span>
-                        How to Play Minesweeper
-                    </h2>
-                    <Button OnClick="Close"
-                            Variant="ButtonVariant.Icon"
-                            AriaLabel="Close help modal">
-                        <span class="text-2xl">✕</span>
-                    </Button>
-                </div>
-            </div>
-            
-            <div class="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
-                <div class="space-y-6 text-gray-300">
-                    <section>
-                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                            <span>🎯</span>
-                            Objective
-                        </h3>
-                        <p class="leading-relaxed">
-                            Clear all the safe cells without clicking on any mines. Use logic and the number clues to deduce where mines are hidden.
-                        </p>
-                    </section>
+<Modal IsVisible="@IsVisible"
+       OnClose="@OnClose"
+       Title="How to Play Minesweeper"
+       Icon="📖"
+       Size="Modal.ModalSize.Large">
+    <Stack Direction="Stack.StackDirection.Column" Gap="Stack.StackGap.ExtraLarge" Class="text-gray-300">
+        <section>
+            <SectionHeader Icon="🎯" Title="Objective" Size="SectionHeader.HeaderSize.Medium" />
+            <p class="leading-relaxed">
+                Clear all the safe cells without clicking on any mines. Use logic and the number clues to deduce where mines are hidden.
+            </p>
+        </section>
                     
-                    <section>
-                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                            <span>🎮</span>
-                            Controls
-                        </h3>
-                        <div class="space-y-3">
-                            <div class="flex items-start gap-3 bg-gray-700 p-3 rounded-lg">
-                                <span class="text-blue-400 font-mono whitespace-nowrap">Left Click</span>
-                                <span>Reveal a cell. If it's a mine, game over!</span>
-                            </div>
-                            <div class="flex items-start gap-3 bg-gray-700 p-3 rounded-lg">
-                                <span class="text-blue-400 font-mono whitespace-nowrap">Right Click</span>
-                                <span>Place or remove a flag to mark suspected mines</span>
-                            </div>
-                            <div class="flex items-start gap-3 bg-gray-700 p-3 rounded-lg">
-                                <span class="text-blue-400 font-mono whitespace-nowrap">Double Click</span>
-                                <span>Quick-reveal adjacent cells if the correct number of flags are placed</span>
-                            </div>
-                        </div>
-                    </section>
+        <section>
+            <SectionHeader Icon="🎮" Title="Controls" Size="SectionHeader.HeaderSize.Medium" />
+            <Stack Direction="Stack.StackDirection.Column" Gap="Stack.StackGap.Medium">
+                <Card Variant="CardVariant.Secondary" Padding="CardPadding.Small">
+                    <Stack Direction="Stack.StackDirection.Row" Align="Stack.StackAlign.Start" Gap="Stack.StackGap.Medium">
+                        <span class="text-blue-400 font-mono whitespace-nowrap">Left Click</span>
+                        <span>Reveal a cell. If it's a mine, game over!</span>
+                    </Stack>
+                </Card>
+                <Card Variant="CardVariant.Secondary" Padding="CardPadding.Small">
+                    <Stack Direction="Stack.StackDirection.Row" Align="Stack.StackAlign.Start" Gap="Stack.StackGap.Medium">
+                        <span class="text-blue-400 font-mono whitespace-nowrap">Right Click</span>
+                        <span>Place or remove a flag to mark suspected mines</span>
+                    </Stack>
+                </Card>
+                <Card Variant="CardVariant.Secondary" Padding="CardPadding.Small">
+                    <Stack Direction="Stack.StackDirection.Row" Align="Stack.StackAlign.Start" Gap="Stack.StackGap.Medium">
+                        <span class="text-blue-400 font-mono whitespace-nowrap">Double Click</span>
+                        <span>Quick-reveal adjacent cells if the correct number of flags are placed</span>
+                    </Stack>
+                </Card>
+            </Stack>
+        </section>
                     
-                    <section>
-                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                            <span>🔢</span>
-                            Understanding Numbers
-                        </h3>
-                        <p class="mb-3">Each number tells you how many mines are in the 8 adjacent cells:</p>
-                        <div class="grid grid-cols-4 gap-2">
-                            @for (int i = 1; i <= 8; i++)
-                            {
-                                <div class="bg-gray-700 p-2 rounded-xs text-center">
-                                    <span class="text-2xl font-bold @GetNumberColorClass(i)">@i</span>
-                                    <p class="text-xs mt-1">@i @(i == 1 ? "mine" : "mines")</p>
-                                </div>
-                            }
-                        </div>
-                    </section>
+        <section>
+            <SectionHeader Icon="🔢" Title="Understanding Numbers" Size="SectionHeader.HeaderSize.Medium" />
+            <p class="mb-3">Each number tells you how many mines are in the 8 adjacent cells:</p>
+            <Grid Columns="4" Gap="Grid.GridGap.Small">
+                @for (int i = 1; i <= 8; i++)
+                {
+                    <Card Variant="CardVariant.Secondary" Padding="CardPadding.Small" Class="text-center">
+                        <span class="text-2xl font-bold @GetNumberColorClass(i)">@i</span>
+                        <p class="text-xs mt-1">@i @(i == 1 ? "mine" : "mines")</p>
+                    </Card>
+                }
+            </Grid>
+        </section>
                     
-                    <section>
-                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                            <span>💡</span>
-                            Pro Tips
-                        </h3>
-                        <ul class="space-y-2">
-                            <li class="flex items-start gap-2">
-                                <span class="text-green-400">•</span>
-                                Your first click is always safe - mines are placed after
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-green-400">•</span>
-                                Start with corners and edges - they have fewer adjacent cells
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-green-400">•</span>
-                                If a number equals the unflagged cells around it, they're all mines
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-green-400">•</span>
-                                If a number equals the flags around it, other cells are safe
-                            </li>
-                        </ul>
-                    </section>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+        <section>
+            <SectionHeader Icon="💡" Title="Pro Tips" Size="SectionHeader.HeaderSize.Medium" />
+            <Stack Direction="Stack.StackDirection.Column" Gap="Stack.StackGap.Small">
+                <Stack Direction="Stack.StackDirection.Row" Align="Stack.StackAlign.Start" Gap="Stack.StackGap.Small">
+                    <span class="text-green-400">•</span>
+                    <span>Your first click is always safe - mines are placed after</span>
+                </Stack>
+                <Stack Direction="Stack.StackDirection.Row" Align="Stack.StackAlign.Start" Gap="Stack.StackGap.Small">
+                    <span class="text-green-400">•</span>
+                    <span>Start with corners and edges - they have fewer adjacent cells</span>
+                </Stack>
+                <Stack Direction="Stack.StackDirection.Row" Align="Stack.StackAlign.Start" Gap="Stack.StackGap.Small">
+                    <span class="text-green-400">•</span>
+                    <span>If a number equals the unflagged cells around it, they're all mines</span>
+                </Stack>
+                <Stack Direction="Stack.StackDirection.Row" Align="Stack.StackAlign.Start" Gap="Stack.StackGap.Small">
+                    <span class="text-green-400">•</span>
+                    <span>If a number equals the flags around it, other cells are safe</span>
+                </Stack>
+            </Stack>
+        </section>
+    </Stack>
+</Modal>
 
 @code {
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
-    
-    private bool _isClosing = false;
-    
-    private async Task Close()
-    {
-        _isClosing = true;
-        StateHasChanged();
-        await Task.Delay(200);
-        _isClosing = false;
-        await OnClose.InvokeAsync();
-    }
-    
+
     private string GetNumberColorClass(int number)
     {
         return number switch
