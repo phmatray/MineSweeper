@@ -101,10 +101,10 @@
         // Check if we have a pending game to start after reload
         try
         {
-            var pendingDifficulty = await JSRuntime.InvokeAsync<string?>("sessionStorage.getItem", "pendingGameDifficulty");
+            var pendingDifficulty = await JSRuntime.InvokeAsync<string?>("sessionStorage.getItem", StorageKeys.PendingGameDifficulty);
             if (!string.IsNullOrEmpty(pendingDifficulty))
             {
-                await JSRuntime.InvokeVoidAsync("sessionStorage.removeItem", "pendingGameDifficulty");
+                await JSRuntime.InvokeVoidAsync("sessionStorage.removeItem", StorageKeys.PendingGameDifficulty);
                 if (Enum.TryParse<GameDifficulty>(pendingDifficulty, out var difficulty))
                 {
                     GameService.NewGame(difficulty);
@@ -159,7 +159,7 @@
             (GameService.CurrentGame.Status == GameStatus.Won || GameService.CurrentGame.Status == GameStatus.Lost))
         {
             // Save the difficulty to start after reload
-            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "pendingGameDifficulty", difficulty.ToString());
+            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", StorageKeys.PendingGameDifficulty, difficulty.ToString());
 
             // Force page reload
             NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);

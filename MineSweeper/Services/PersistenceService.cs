@@ -9,8 +9,6 @@ public class PersistenceService
 {
     private readonly IJSRuntime _jsRuntime;
     private readonly GameService _gameService;
-    private const string GameStateKey = "minesweeper_current_game";
-    private const string SoundSettingsKey = "minesweeper_sound_settings";
 
     public PersistenceService(IJSRuntime jsRuntime, GameService gameService)
     {
@@ -25,12 +23,12 @@ public class PersistenceService
             var savedState = _gameService.SerializeGameState();
             if (savedState == null)
             {
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", GameStateKey);
+                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", StorageKeys.CurrentGame);
                 return;
             }
 
             var json = JsonSerializer.Serialize(savedState);
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", GameStateKey, json);
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", StorageKeys.CurrentGame, json);
         }
         catch
         {
@@ -42,7 +40,7 @@ public class PersistenceService
     {
         try
         {
-            var json = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", GameStateKey);
+            var json = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", StorageKeys.CurrentGame);
             if (string.IsNullOrEmpty(json))
                 return null;
 
@@ -58,7 +56,7 @@ public class PersistenceService
     {
         try
         {
-            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", GameStateKey);
+            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", StorageKeys.CurrentGame);
         }
         catch
         {
@@ -70,7 +68,7 @@ public class PersistenceService
     {
         try
         {
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", SoundSettingsKey, soundEnabled.ToString());
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", StorageKeys.SoundSettings, soundEnabled.ToString());
         }
         catch
         {
@@ -82,7 +80,7 @@ public class PersistenceService
     {
         try
         {
-            var value = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", SoundSettingsKey);
+            var value = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", StorageKeys.SoundSettings);
             if (bool.TryParse(value, out var soundEnabled))
                 return soundEnabled;
         }

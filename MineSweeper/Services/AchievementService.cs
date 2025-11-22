@@ -11,9 +11,6 @@ public class AchievementService : IDisposable
     private readonly GameService _gameService;
     private readonly SoundService _soundService;
     private readonly AchievementChecker _achievementChecker;
-
-    private const string StatisticsKey = "minesweeper_statistics";
-    private const string AchievementsKey = "minesweeper_achievements";
     
     public GameStatistics Statistics { get; private set; } = new();
     public List<Achievement> UnlockedAchievements { get; private set; } = new();
@@ -40,13 +37,13 @@ public class AchievementService : IDisposable
     {
         try
         {
-            var statsJson = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", StatisticsKey);
+            var statsJson = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", StorageKeys.Statistics);
             if (!string.IsNullOrEmpty(statsJson))
             {
                 Statistics = JsonSerializer.Deserialize<GameStatistics>(statsJson) ?? new();
             }
-            
-            var achievementsJson = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", AchievementsKey);
+
+            var achievementsJson = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", StorageKeys.Achievements);
             if (!string.IsNullOrEmpty(achievementsJson))
             {
                 var unlockedIds = JsonSerializer.Deserialize<List<string>>(achievementsJson) ?? new();
@@ -72,11 +69,11 @@ public class AchievementService : IDisposable
         try
         {
             var statsJson = JsonSerializer.Serialize(Statistics);
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", StatisticsKey, statsJson);
-            
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", StorageKeys.Statistics, statsJson);
+
             var unlockedIds = UnlockedAchievements.Select(a => a.Id).ToList();
             var achievementsJson = JsonSerializer.Serialize(unlockedIds);
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", AchievementsKey, achievementsJson);
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", StorageKeys.Achievements, achievementsJson);
         }
         catch
         {
