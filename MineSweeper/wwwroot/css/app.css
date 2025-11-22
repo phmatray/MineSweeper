@@ -1,3 +1,6 @@
+/* ===== IMPORT UTILITY CLASSES ===== */
+@import 'utilities.css';
+
 /* ===== CSS RESET ===== */
 
 * {
@@ -387,6 +390,3 @@ code {
     opacity: 0;
   }
 }
-
-/* ===== IMPORT UTILITY CLASSES ===== */
-@import 'utilities.css';
