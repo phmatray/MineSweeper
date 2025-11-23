@@ -1,6 +1,23 @@
 # MineSweeper UI Kit Documentation
 
-This document provides comprehensive guidance on using the UI Kit components created for the MineSweeper Blazor application.
+This document provides comprehensive guidance on using the **MineSweeper.UIKit** Razor Class Library (RCL) - a reusable component library for Blazor applications.
+
+## Installation
+
+The UI Kit is distributed as a Razor Class Library (RCL) project. To use it in your Blazor project:
+
+1. **Add Project Reference:**
+   ```bash
+   dotnet add reference ../MineSweeper.UIKit/MineSweeper.UIKit.csproj
+   ```
+
+2. **Add Using Directives** to your `_Imports.razor`:
+   ```razor
+   @using MineSweeper.UIKit.Components.Atoms
+   @using MineSweeper.UIKit.Components.Molecules
+   ```
+
+3. **Start using the components** in your Razor pages and components!
 
 ## Table of Contents
 
@@ -19,7 +36,7 @@ This document provides comprehensive guidance on using the UI Kit components cre
 
 A responsive container component that centers and constrains content width.
 
-**Location:** `MineSweeper/Components/Atoms/Container.razor`
+**Location:** `MineSweeper.UIKit/Components/Atoms/Container.razor`
 
 **Props:**
 - `MaxWidth` - ContainerSize (Small | Medium | Large | ExtraLarge | TwoXL | ThreeXL | FourXL | FiveXL | SixXL | SevenXL | Full) - Default: `SevenXL`
@@ -40,7 +57,7 @@ A responsive container component that centers and constrains content width.
 
 A flexbox layout component for arranging children vertically or horizontally.
 
-**Location:** `MineSweeper/Components/Atoms/Stack.razor`
+**Location:** `MineSweeper.UIKit/Components/Atoms/Stack.razor`
 
 **Props:**
 - `Direction` - StackDirection (Row | RowReverse | Column | ColumnReverse) - Default: `Column`
@@ -66,7 +83,7 @@ A flexbox layout component for arranging children vertically or horizontally.
 
 A CSS Grid layout component for creating responsive grid layouts.
 
-**Location:** `MineSweeper/Components/Atoms/Grid.razor`
+**Location:** `MineSweeper.UIKit/Components/Atoms/Grid.razor`
 
 **Props:**
 - `Columns` - int - Number of columns (mobile) - Default: `1`
@@ -92,7 +109,7 @@ A CSS Grid layout component for creating responsive grid layouts.
 
 A versatile card component with multiple variants and customization options.
 
-**Location:** `MineSweeper/Components/Atoms/Card.razor`
+**Location:** `MineSweeper.UIKit/Components/Atoms/Card.razor`
 
 **Props:**
 - `Variant` - CardVariant (Primary | Secondary | Glass | GlassStrong | Elevated | Dark | Outline) - Default: `Primary`
@@ -114,7 +131,7 @@ A versatile card component with multiple variants and customization options.
 
 A card header component with consistent styling.
 
-**Location:** `MineSweeper/Components/Atoms/CardHeader.razor`
+**Location:** `MineSweeper.UIKit/Components/Atoms/CardHeader.razor`
 
 **Props:**
 - `Border` - bool - Show bottom border - Default: `true`
@@ -139,7 +156,7 @@ A card header component with consistent styling.
 
 A card body component for main content.
 
-**Location:** `MineSweeper/Components/Atoms/CardBody.razor`
+**Location:** `MineSweeper.UIKit/Components/Atoms/CardBody.razor`
 
 **Props:**
 - `Padding` - CardPadding (None | Small | Medium | Large) - Default: `Medium`
@@ -151,7 +168,7 @@ A card body component for main content.
 
 A card footer component with consistent styling.
 
-**Location:** `MineSweeper/Components/Atoms/CardFooter.razor`
+**Location:** `MineSweeper.UIKit/Components/Atoms/CardFooter.razor`
 
 **Props:**
 - `Border` - bool - Show top border - Default: `true`
@@ -178,7 +195,7 @@ A card footer component with consistent styling.
 
 A consistent heading component with optional icon.
 
-**Location:** `MineSweeper/Components/Atoms/SectionHeader.razor`
+**Location:** `MineSweeper.UIKit/Components/Atoms/SectionHeader.razor`
 
 **Props:**
 - `Title` - string - The header text
@@ -199,7 +216,7 @@ A consistent heading component with optional icon.
 
 A navigation link component for consistent nav styling.
 
-**Location:** `MineSweeper/Components/Atoms/NavItem.razor`
+**Location:** `MineSweeper.UIKit/Components/Atoms/NavItem.razor`
 
 **Props:**
 - `Href` - string - Navigation URL (required)
@@ -228,7 +245,7 @@ A navigation link component for consistent nav styling.
 
 A reusable modal/dialog component with customizable content.
 
-**Location:** `MineSweeper/Components/Molecules/Modal.razor`
+**Location:** `MineSweeper.UIKit/Components/Molecules/Modal.razor`
 
 **Props:**
 - `IsVisible` - bool - Control modal visibility (required)
@@ -269,7 +286,7 @@ A reusable modal/dialog component with customizable content.
 
 A notification component for displaying temporary messages.
 
-**Location:** `MineSweeper/Components/Molecules/Toast.razor`
+**Location:** `MineSweeper.UIKit/Components/Molecules/Toast.razor`
 
 **Props:**
 - `IsVisible` - bool - Control toast visibility - Default: `true`
@@ -409,10 +426,11 @@ A notification component for displaying temporary messages.
 All UI Kit components are organized following atomic design principles:
 
 ### Atoms (Basic Building Blocks)
-- **MineSweeper/Components/Atoms/**
+- **MineSweeper.UIKit/Components/Atoms/**
   - `Button.razor` - Button component with variants
   - `Badge.razor` - Badge/label component
   - `Icon.razor` - Icon wrapper
+  - `NumberDisplay.razor` - Number display component
   - `Card.razor` - Card container
   - `CardHeader.razor` - Card header section
   - `CardBody.razor` - Card body section
@@ -425,7 +443,7 @@ All UI Kit components are organized following atomic design principles:
   - `NavItem.razor` - Navigation link
 
 ### Molecules (Component Combinations)
-- **MineSweeper/Components/Molecules/**
+- **MineSweeper.UIKit/Components/Molecules/**
   - `Modal.razor` - Modal/dialog component
   - `Toast.razor` - Notification component
   - `StatCard.razor` - Statistics card
@@ -536,6 +554,6 @@ All components include proper ARIA attributes and keyboard navigation support. W
 ## Support
 
 For questions or issues with the UI Kit components, please refer to:
-- Component source code in `MineSweeper/Components/`
+- Component source code in `MineSweeper.UIKit/Components/`
 - This documentation file
-- Existing usage examples in `Statistics.razor`, `Achievements.razor`, `GameLayout.razor`, and `HelpModal.razor`
+- Existing usage examples in `MineSweeper/Pages/Statistics.razor`, `MineSweeper/Pages/Achievements.razor`, `MineSweeper/Layout/GameLayout.razor`, and `MineSweeper/Components/Organisms/HelpModal.razor`

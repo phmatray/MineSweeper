@@ -1,4 +1,4 @@
-namespace MineSweeper.Components.Atoms;
+namespace MineSweeper.UIKit.Components.Atoms;
 
 public enum CardVariant
 {

@@ -1,4 +1,4 @@
-namespace MineSweeper.Components.Atoms;
+namespace MineSweeper.UIKit.Components.Atoms;
 
 /// <summary>
 /// Defines the visual variants for the Button component.

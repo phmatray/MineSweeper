@@ -1,6 +1,7 @@
 @using MineSweeper.Services
 @inject GameService GameService
 @inject SoundService SoundService
+@inject IJSRuntime JsRuntime
 @implements IDisposable
 
 @if (GameService.CurrentGame != null)
@@ -61,8 +62,6 @@
 }
 
 @code {
-    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
-
     private DateTime _currentGameCreatedAt = DateTime.MinValue;
 
     protected override void OnInitialized()
@@ -98,7 +97,7 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("ParticleEffects.init");
+            await JsRuntime.InvokeVoidAsync("ParticleEffects.init");
         }
 
         // Check for game over states and trigger effects
@@ -107,7 +106,7 @@
             if (GameService.CurrentGame.Status == GameStatus.Won && !_hasPlayedWinEffect)
             {
                 _hasPlayedWinEffect = true;
-                await JSRuntime.InvokeVoidAsync("ParticleEffects.createConfetti");
+                await JsRuntime.InvokeVoidAsync("ParticleEffects.createConfetti");
             }
             else if (GameService.CurrentGame.Status == GameStatus.InProgress || GameService.CurrentGame.Status == GameStatus.NotStarted)
             {
@@ -116,7 +115,7 @@
         }
     }
 
-    private bool _hasPlayedWinEffect = false;
+    private bool _hasPlayedWinEffect;
 
     private async void HandleCellClick(int row, int col, MouseEventArgs e)
     {
@@ -139,7 +138,7 @@
                 if (newCell != null && newCell.AdjacentMines > 0)
                 {
                     // Only sparkle for cells with numbers (not empty cells that trigger batch reveal)
-                    await JSRuntime.InvokeVoidAsync("ParticleEffects.createSparkle", e.ClientX, e.ClientY);
+                    await JsRuntime.InvokeVoidAsync("ParticleEffects.createSparkle", e.ClientX, e.ClientY);
                 }
             }
         }
@@ -147,7 +146,7 @@
         // Add explosion effect if mine was hit
         if (wasMine && GameService.CurrentGame?.Status == GameStatus.Lost)
         {
-            await JSRuntime.InvokeVoidAsync("ParticleEffects.createExplosion", e.ClientX, e.ClientY);
+            await JsRuntime.InvokeVoidAsync("ParticleEffects.createExplosion", e.ClientX, e.ClientY);
         }
     }
 

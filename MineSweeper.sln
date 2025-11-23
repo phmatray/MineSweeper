@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweeper", "MineSweeper\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweeper.Engine", "MineSweeper.Engine\MineSweeper.Engine.csproj", "{2AFAD64E-8560-492C-8046-7181D4B027B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweeper.UIKit", "MineSweeper.UIKit\MineSweeper.UIKit.csproj", "{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,18 @@ Global
 		{2AFAD64E-8560-492C-8046-7181D4B027B9}.Release|x64.Build.0 = Release|Any CPU
 		{2AFAD64E-8560-492C-8046-7181D4B027B9}.Release|x86.ActiveCfg = Release|Any CPU
 		{2AFAD64E-8560-492C-8046-7181D4B027B9}.Release|x86.Build.0 = Release|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Debug|x64.Build.0 = Debug|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Debug|x86.Build.0 = Debug|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Release|x64.ActiveCfg = Release|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Release|x64.Build.0 = Release|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Release|x86.ActiveCfg = Release|Any CPU
+		{DA7F8409-6E3D-4D05-8BB3-BD70233C68F7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

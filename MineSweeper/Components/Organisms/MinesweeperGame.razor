@@ -3,7 +3,7 @@
 @inject SoundService SoundService
 @inject AchievementService AchievementService
 @inject PersistenceService PersistenceService
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime JsRuntime
 @inject NavigationManager NavigationManager
 @implements IDisposable
 
@@ -90,7 +90,7 @@
 <HelpModal IsVisible="_showHelp" OnClose="() => _showHelp = false" />
 
 @code {
-    private System.Threading.Timer? _timer;
+    private Timer? _timer;
     private bool _gameRestored = false;
     private bool _showHelp = false;
 
@@ -98,15 +98,15 @@
     {
         GameService.OnGameStateChanged += OnGameStateChanged;
         SoundService.OnSoundToggled += OnSoundToggled;
-        _timer = new System.Threading.Timer(_ => InvokeAsync(StateHasChanged), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+        _timer = new Timer(_ => InvokeAsync(StateHasChanged), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
 
         // Check if we have a pending game to start after reload
         try
         {
-            var pendingDifficulty = await JSRuntime.InvokeAsync<string?>("sessionStorage.getItem", StorageKeys.PendingGameDifficulty);
+            var pendingDifficulty = await JsRuntime.InvokeAsync<string?>("sessionStorage.getItem", StorageKeys.PendingGameDifficulty);
             if (!string.IsNullOrEmpty(pendingDifficulty))
             {
-                await JSRuntime.InvokeVoidAsync("sessionStorage.removeItem", StorageKeys.PendingGameDifficulty);
+                await JsRuntime.InvokeVoidAsync("sessionStorage.removeItem", StorageKeys.PendingGameDifficulty);
                 if (Enum.TryParse<GameDifficulty>(pendingDifficulty, out var difficulty))
                 {
                     GameService.NewGame(difficulty);
@@ -161,7 +161,7 @@
             (GameService.CurrentGame.Status == GameStatus.Won || GameService.CurrentGame.Status == GameStatus.Lost))
         {
             // Save the difficulty to start after reload
-            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", StorageKeys.PendingGameDifficulty, difficulty.ToString());
+            await JsRuntime.InvokeVoidAsync("sessionStorage.setItem", StorageKeys.PendingGameDifficulty, difficulty.ToString());
 
             // Force page reload
             NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);

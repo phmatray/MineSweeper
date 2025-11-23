@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MineSweeper.Engine\MineSweeper.Engine.csproj" />
+    <ProjectReference Include="..\MineSweeper.UIKit\MineSweeper.UIKit.csproj" />
   </ItemGroup>
 
 </Project>
