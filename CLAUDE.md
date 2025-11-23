@@ -18,34 +18,31 @@ This separation allows:
 
 ### Standard Build
 ```bash
-# Build entire solution (includes Tailwind CSS compilation)
+# Build entire solution from repository root
 dotnet build
 
 # Build for release
 dotnet publish -c Release
+
+# Restore dependencies
+dotnet restore
 ```
 
 ### Running Locally
 ```bash
-# Run from solution root
-cd MineSweeper
-dotnet run
-
-# Or from MineSweeper directory
+# Run from MineSweeper application directory
 cd MineSweeper/MineSweeper
 dotnet run
+
+# Application will be available at https://localhost:5001
 ```
 
-### Tailwind CSS
-The build automatically runs Tailwind CSS via MSBuild targets. Manual commands:
-```bash
-cd MineSweeper
-
-# Build CSS once
-npm run build-css
-
-# Watch for changes during development
-npm run watch-css
+### Solution Structure
+```
+MineSweeper.sln
+├── MineSweeper.Engine/          # Pure .NET class library (game logic)
+├── MineSweeper.UIKit/           # Razor Class Library (reusable components)
+└── MineSweeper/                 # Blazor WebAssembly application
 ```
 
 ## Architecture
@@ -80,6 +77,7 @@ npm run watch-css
 - **Molecules** (7 components) - Composite components: Modal, Toast, ProgressBar, StatCard, GameCell, etc.
 
 **Key Design Principles:**
+- **Code-behind pattern**: All components use `.razor.cs` files for C# logic, keeping `.razor` files focused on markup
 - Type-safe props using enums (ButtonVariant, CardVariant, etc.)
 - Accessibility-first with ARIA support and keyboard navigation
 - Scoped CSS prevents style conflicts with consuming projects
@@ -142,10 +140,10 @@ npm run watch-css
 - Uses `PublishSPAforGitHubPages.Build` NuGet package
 - Automatic deployment via GitHub Actions on push to `main`
 
-### Tailwind CSS Integration
-- MSBuild `BeforeTargets="Build"` runs `npm install` and `npm run build-css`
-- Input: `Styles/app.css`, Output: `wwwroot/css/app.css`
-- Tailwind v4.1.17 via `@tailwindcss/cli`
+### Blazor WebAssembly Configuration
+- Uses `Microsoft.AspNetCore.Components.WebAssembly` SDK
+- Application styled with Tailwind CSS for layout
+- PWA support enabled (service worker, offline capability)
 
 ## Important Implementation Details
 
@@ -209,11 +207,13 @@ When working across projects:
 
 ### Adding New UIKit Component
 1. Choose appropriate layer: Atom (basic) or Molecule (composite)
-2. Create component in `MineSweeper.UIKit/Components/[Atoms|Molecules]/`
-3. Create corresponding `.razor.css` file with scoped styles
-4. Use enums for variant/type props (e.g., `ButtonVariant`, `CardVariant`)
-5. Include accessibility features (ARIA labels, keyboard navigation)
-6. Update `MineSweeper.UIKit/README.md` with component documentation
+2. Create component files in `MineSweeper.UIKit/Components/[Atoms|Molecules]/`:
+   - `ComponentName.razor` - Markup only
+   - `ComponentName.razor.cs` - C# logic using `partial class`
+   - `ComponentName.razor.css` - Scoped styles
+3. Use enums for variant/type props (e.g., `ButtonVariant`, `CardVariant`)
+4. Include accessibility features (ARIA labels, keyboard navigation)
+5. Update `MineSweeper.UIKit/README.md` with component documentation
 
 ### Adding New Frontend
 1. Reference `MineSweeper.Engine` project
