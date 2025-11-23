@@ -29,17 +29,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    [Parameter] public EventCallback OnShowHelp { get; set; }
-    
-    private void ToggleSound()
-    {
-        SoundService.SoundEnabled = !SoundService.SoundEnabled;
-    }
-    
-    private async Task ShowHelp()
-    {
-        await OnShowHelp.InvokeAsync();
-    }
-}

@@ -1,13 +1,12 @@
 # MineSweeper.UIKit
 
-A reusable Razor Class Library (RCL) containing UI components built with Blazor and styled with Tailwind CSS. This library follows atomic design principles to provide a consistent, maintainable, and accessible component system.
+A reusable Razor Class Library (RCL) containing UI components built with Blazor and styled with plain CSS. This library follows atomic design principles to provide a consistent, maintainable, and accessible component system.
 
 ## 🎨 Features
 
 - **Atomic Design Architecture** - Components organized as Atoms and Molecules
 - **Type-Safe Props** - Enum-based variants prevent errors
 - **Accessibility First** - Built-in ARIA support and keyboard navigation
-- **Tailwind CSS** - Utility-first styling approach
 - **Fully Documented** - Comprehensive prop documentation
 - **Blazor Native** - Pure Blazor components with no JavaScript dependencies
 
@@ -32,33 +31,33 @@ Add the following to your project's `_Imports.razor`:
 
 ### Atoms (Basic Building Blocks)
 
-| Component | Description |
-|-----------|-------------|
-| **Badge** | Small label or tag component |
-| **Button** | Interactive button with multiple variants |
-| **Card** | Versatile container with variants and padding options |
-| **CardHeader** | Styled header section for cards |
-| **CardBody** | Main content area for cards |
-| **CardFooter** | Footer section for cards |
-| **Container** | Responsive container with max-width constraints |
-| **Grid** | CSS Grid layout with responsive columns |
-| **Icon** | Icon wrapper component |
-| **NavItem** | Navigation link with consistent styling |
-| **NumberDisplay** | Styled number display component |
-| **SectionHeader** | Heading component with optional icon |
-| **Stack** | Flexbox layout for arranging children |
+| Component         | Description                                           |
+|-------------------|-------------------------------------------------------|
+| **Badge**         | Small label or tag component                          |
+| **Button**        | Interactive button with multiple variants             |
+| **Card**          | Versatile container with variants and padding options |
+| **CardHeader**    | Styled header section for cards                       |
+| **CardBody**      | Main content area for cards                           |
+| **CardFooter**    | Footer section for cards                              |
+| **Container**     | Responsive container with max-width constraints       |
+| **Grid**          | CSS Grid layout with responsive columns               |
+| **Icon**          | Icon wrapper component                                |
+| **NavItem**       | Navigation link with consistent styling               |
+| **NumberDisplay** | Styled number display component                       |
+| **SectionHeader** | Heading component with optional icon                  |
+| **Stack**         | Flexbox layout for arranging children                 |
 
 ### Molecules (Component Combinations)
 
-| Component | Description |
-|-----------|-------------|
-| **AchievementCard** | Display card for achievements |
-| **DifficultyButton** | Button for selecting game difficulty |
-| **GameCell** | Minesweeper game cell component |
-| **Modal** | Dialog/modal with animations and accessibility |
-| **ProgressBar** | Visual progress indicator |
-| **StatCard** | Statistics display card |
-| **Toast** | Notification component with auto-dismiss |
+| Component            | Description                                    |
+|----------------------|------------------------------------------------|
+| **AchievementCard**  | Display card for achievements                  |
+| **DifficultyButton** | Button for selecting game difficulty           |
+| **GameCell**         | Minesweeper game cell component                |
+| **Modal**            | Dialog/modal with animations and accessibility |
+| **ProgressBar**      | Visual progress indicator                      |
+| **StatCard**         | Statistics display card                        |
+| **Toast**            | Notification component with auto-dismiss       |
 
 ## 🚀 Quick Start
 
@@ -109,14 +108,14 @@ Add the following to your project's `_Imports.razor`:
        Icon="⚠️"
        Size="Modal.ModalSize.Medium">
     <p>Are you sure you want to proceed?</p>
-    <div class="mt-4 flex gap-2 justify-end">
+    <Stack Direction="Stack.StackDirection.Row" Justify="Stack.StackJustify.End" Gap="Stack.StackGap.Small">
         <Button Variant="ButtonVariant.Secondary" OnClick="@(() => _showModal = false)">
             Cancel
         </Button>
         <Button Variant="ButtonVariant.Primary" OnClick="@HandleConfirm">
             Confirm
         </Button>
-    </div>
+    </Stack>
 </Modal>
 
 @code {
@@ -136,15 +135,15 @@ Add the following to your project's `_Imports.razor`:
 <Stack Direction="Stack.StackDirection.Column" Gap="Stack.StackGap.Medium">
     <Stack Direction="Stack.StackDirection.Row" Justify="Stack.StackJustify.Between">
         <span>Total Games</span>
-        <span class="font-bold">42</span>
+        <NumberDisplay Value="42" />
     </Stack>
     <Stack Direction="Stack.StackDirection.Row" Justify="Stack.StackJustify.Between">
         <span>Wins</span>
-        <span class="font-bold text-green-400">28</span>
+        <NumberDisplay Value="28" />
     </Stack>
     <Stack Direction="Stack.StackDirection.Row" Justify="Stack.StackJustify.Between">
         <span>Win Rate</span>
-        <span class="font-bold text-blue-400">66.7%</span>
+        <NumberDisplay Value="66.7" Suffix="%" />
     </Stack>
 </Stack>
 ```
@@ -291,11 +290,14 @@ Add the following to your project's `_Imports.razor`:
 
 ## 🎨 Styling
 
-This library uses Tailwind CSS utility classes. Ensure your consuming project has Tailwind CSS configured and includes the necessary styles.
+This library uses **plain CSS** for all component styling. All styles are self-contained within the RCL using scoped CSS files (`.razor.css`), making the library completely standalone with zero external dependencies.
 
-### Required CSS Classes
+### CSS Architecture
 
-The components use standard Tailwind utility classes. No additional CSS compilation is required from the RCL itself, as Blazor RCLs can include scoped CSS files.
+- **Scoped CSS**: Each component has its own `.razor.css` file with isolated styles
+- **No Build Step**: No CSS compilation or processing required
+- **No External Dependencies**: No Tailwind, Bootstrap, or other CSS frameworks needed
+- **Consuming Project Flexibility**: Your consuming project can use any CSS framework (Tailwind, Bootstrap, etc.) alongside this library without conflicts
 
 ## ♿ Accessibility
 
@@ -363,4 +365,4 @@ Potential additions to the library:
 
 ---
 
-**Built with ❤️ using Blazor and Tailwind CSS**
+**Built with ❤️ using Blazor**

@@ -1,0 +1,67 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
+
+namespace MineSweeper.Components.Atoms;
+
+public partial class NavItem
+{
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public string Href { get; set; } = string.Empty;
+
+    [Parameter] public string? Label { get; set; }
+
+    [Parameter] public string? Icon { get; set; }
+
+    [Parameter] public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+
+    [Parameter] public NavItemSize Size { get; set; } = NavItemSize.Medium;
+
+    [Parameter] public bool IsMobile { get; set; } = false;
+
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    [Parameter] public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string GetNavItemClasses()
+    {
+        var classes = new List<string>
+        {
+            "flex items-center gap-2 rounded-lg text-gray-300 hover:text-white hover:bg-blue-500/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+        };
+
+        // Size/padding - different for mobile vs desktop
+        if (IsMobile)
+        {
+            classes.Add("px-4 py-3 w-full");
+        }
+        else
+        {
+            classes.Add(Size switch
+            {
+                NavItemSize.Small => "px-2 py-1.5 text-sm",
+                NavItemSize.Medium => "px-3 lg:px-4 py-2 text-sm",
+                NavItemSize.Large => "px-4 lg:px-5 py-2.5 text-base",
+                _ => "px-3 lg:px-4 py-2 text-sm"
+            });
+        }
+
+        // Additional custom classes
+        if (!string.IsNullOrWhiteSpace(Class))
+        {
+            classes.Add(Class);
+        }
+
+        return string.Join(" ", classes.Where(c => !string.IsNullOrWhiteSpace(c)));
+    }
+
+    public enum NavItemSize
+    {
+        Small,
+        Medium,
+        Large
+    }
+}

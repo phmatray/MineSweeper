@@ -1,0 +1,33 @@
+using Microsoft.AspNetCore.Components;
+
+namespace MineSweeper.UIKit.Components.Atoms;
+
+public partial class Badge
+{
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string Variant { get; set; } = "primary"; // primary, success, warning, danger, info, gray
+    [Parameter] public string? AdditionalClasses { get; set; }
+
+    private string GetBadgeClasses()
+    {
+        var classes = "badge-base";
+
+        classes += Variant switch
+        {
+            "primary" => " badge-primary",
+            "success" => " badge-success",
+            "warning" => " badge-warning",
+            "danger" => " badge-danger",
+            "info" => " badge-info",
+            "gray" => " badge-gray",
+            _ => " badge-primary"
+        };
+
+        if (!string.IsNullOrEmpty(AdditionalClasses))
+        {
+            classes += " " + AdditionalClasses;
+        }
+
+        return classes;
+    }
+}

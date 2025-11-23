@@ -4,12 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-MineSweeper is a Blazor WebAssembly game with a **separated engine architecture**. The codebase is split into two projects:
+MineSweeper is a Blazor WebAssembly game with a **three-layer architecture**:
 
 1. **MineSweeper.Engine** - Pure .NET class library containing all game logic, models, and achievement system
-2. **MineSweeper** - Blazor WebAssembly frontend with UI components, platform services (localStorage, audio), and Tailwind CSS styling
+2. **MineSweeper.UIKit** - Reusable Razor Class Library (RCL) with UI components styled using plain CSS (scoped `.razor.css` files)
+3. **MineSweeper** - Blazor WebAssembly application that combines the engine and UI kit, adds platform services (localStorage, audio), and uses Tailwind CSS for layout
 
-This separation allows the game engine to be reused with different frontends (console, WPF, MAUI, Unity, etc.).
+This separation allows:
+- The game engine to be reused with different frontends (console, WPF, MAUI, Unity, etc.)
+- The UI components to be reused in other Blazor projects without CSS framework dependencies
 
 ## Build and Development Commands
 
@@ -65,11 +68,33 @@ npm run watch-css
 - `GameStatistics` / `DifficultyStatistics` - Tracks wins, streaks, best times
 - `Achievement` / `Achievements` - Static list of 10 achievements across 4 categories
 
-### Frontend Layer (MineSweeper)
+### UI Layer (MineSweeper.UIKit)
 
 **Core Responsibilities:**
-- Blazor UI components and routing
+- Reusable Blazor components following atomic design principles
+- Self-contained styling using scoped CSS (`.razor.css` files)
+- Zero external dependencies (no Tailwind, Bootstrap, etc.)
+
+**Component Organization:**
+- **Atoms** (15 components) - Basic building blocks: Button, Card, Container, Grid, Stack, Badge, Icon, etc.
+- **Molecules** (7 components) - Composite components: Modal, Toast, ProgressBar, StatCard, GameCell, etc.
+
+**Key Design Principles:**
+- Type-safe props using enums (ButtonVariant, CardVariant, etc.)
+- Accessibility-first with ARIA support and keyboard navigation
+- Scoped CSS prevents style conflicts with consuming projects
+- Components accept `AdditionalClasses` or `Class` parameters for extensibility
+
+**Usage:**
+- Import via `@using MineSweeper.UIKit.Components.Atoms` and `@using MineSweeper.UIKit.Components.Molecules`
+- See `MineSweeper.UIKit/README.md` for comprehensive component documentation
+
+### Application Layer (MineSweeper)
+
+**Core Responsibilities:**
+- Blazor WebAssembly application orchestration
 - Platform-specific services (localStorage, sounds, JS interop)
+- Tailwind CSS for layout and application-specific styling
 - Event-driven UI updates via `OnGameStateChanged`
 
 **Service Architecture:**
@@ -78,11 +103,16 @@ npm run watch-css
 - `AchievementService` (Scoped) - Uses engine's `AchievementChecker`, handles events and persistence
 - `SoundService` (Scoped) - Audio playback via JS interop
 
-**Component Structure:**
+**Component Structure (Organisms):**
 - `MinesweeperGame.razor` - Main container, orchestrates services, handles game lifecycle
 - `GameBoard.razor` - Renders CSS grid, handles clicks (left/right/double), triggers visual effects
-- `DifficultySelector.razor`, `GameStats.razor`, `GameHeader.razor` - Smaller focused components
+- `DifficultySelector.razor`, `GameStats.razor`, `GameHeader.razor` - Game-specific UI
 - `AchievementPanel.razor`, `HelpModal.razor` - Feature-specific UI
+
+**Pages:**
+- `Home.razor` - Main game page
+- `Statistics.razor` - Statistics overview page
+- `Achievements.razor` - Achievement gallery page
 
 ### Key Patterns
 
@@ -105,7 +135,7 @@ npm run watch-css
 ## Project Configuration
 
 ### Target Framework
-- .NET 10.0 (both projects)
+- .NET 10.0 (all three projects)
 
 ### GitHub Pages Deployment
 - Configured via `<GHPages>true</GHPages>` and `<GHPagesBase>/MineSweeper/</GHPagesBase>`
@@ -145,8 +175,10 @@ npm run watch-css
 
 When working across projects:
 - Engine types: `using MineSweeper.Engine.Models;` and `using MineSweeper.Engine.Services;`
-- Frontend services: `using MineSweeper.Services;` (PersistenceService, SoundService, AchievementService)
-- Global imports in `_Imports.razor` include both engine namespaces
+- UI Kit components: `using MineSweeper.UIKit.Components.Atoms;` and `using MineSweeper.UIKit.Components.Molecules;`
+- Application services: `using MineSweeper.Services;` (PersistenceService, SoundService, AchievementService)
+- Application organisms: `using MineSweeper.Components.Organisms;`
+- Global imports in application's `_Imports.razor` include all of the above
 
 ## Testing and Debugging
 
@@ -175,9 +207,18 @@ When working across projects:
 3. Track necessary metrics in `GameStatistics` or `GameEndData`
 4. Achievement automatically appears in UI (dynamic rendering)
 
+### Adding New UIKit Component
+1. Choose appropriate layer: Atom (basic) or Molecule (composite)
+2. Create component in `MineSweeper.UIKit/Components/[Atoms|Molecules]/`
+3. Create corresponding `.razor.css` file with scoped styles
+4. Use enums for variant/type props (e.g., `ButtonVariant`, `CardVariant`)
+5. Include accessibility features (ARIA labels, keyboard navigation)
+6. Update `MineSweeper.UIKit/README.md` with component documentation
+
 ### Adding New Frontend
 1. Reference `MineSweeper.Engine` project
-2. Implement your own UI layer
-3. Subscribe to `GameService.OnGameStateChanged` for updates
-4. Implement your own persistence (file, database, etc.) using `SerializeGameState()`
-5. Optionally use `AchievementChecker` for statistics tracking
+2. Optionally reference `MineSweeper.UIKit` for UI components
+3. Implement your own UI layer
+4. Subscribe to `GameService.OnGameStateChanged` for updates
+5. Implement your own persistence (file, database, etc.) using `SerializeGameState()`
+6. Optionally use `AchievementChecker` for statistics tracking
