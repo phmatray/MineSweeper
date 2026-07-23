@@ -1,3 +1,5 @@
+![MineSweeper banner](.github/banner.png)
+
 # MineSweeper 💣
 
 A modern, feature-rich implementation of the classic MineSweeper game built with Blazor WebAssembly and .NET 9.
