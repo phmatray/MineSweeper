@@ -2,6 +2,21 @@
 
 # MineSweeper 💣
 
+<!-- portfolio-badges:start -->
+<!-- Identity -->
+[![phmatray - MineSweeper](https://img.shields.io/static/v1?label=phmatray&message=MineSweeper&color=blue&logo=github)](https://github.com/phmatray/MineSweeper)
+![Top language](https://img.shields.io/github/languages/top/phmatray/MineSweeper)
+[![Stars](https://img.shields.io/github/stars/phmatray/MineSweeper?style=social)](https://github.com/phmatray/MineSweeper/stargazers)
+[![Forks](https://img.shields.io/github/forks/phmatray/MineSweeper?style=social)](https://github.com/phmatray/MineSweeper/network/members)
+[![License](https://img.shields.io/github/license/phmatray/MineSweeper)](https://github.com/phmatray/MineSweeper/blob/HEAD/LICENSE)
+
+<!-- Activity -->
+[![Issues](https://img.shields.io/github/issues/phmatray/MineSweeper)](https://github.com/phmatray/MineSweeper/issues)
+[![Pull requests](https://img.shields.io/github/issues-pr/phmatray/MineSweeper)](https://github.com/phmatray/MineSweeper/pulls)
+[![Last commit](https://img.shields.io/github/last-commit/phmatray/MineSweeper)](https://github.com/phmatray/MineSweeper/commits)
+<!-- portfolio-badges:end -->
+
+
 A modern, feature-rich implementation of the classic MineSweeper game built with Blazor WebAssembly and .NET 9.
 
 🎮 **[Play Now](https://phmatray.github.io/MineSweeper/)**
