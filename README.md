@@ -16,6 +16,23 @@
 [![Last commit](https://img.shields.io/github/last-commit/phmatray/MineSweeper)](https://github.com/phmatray/MineSweeper/commits)
 <!-- portfolio-badges:end -->
 
+<!-- portfolio-toc:start -->
+
+## Table of Contents
+
+- [Features ✨](#features-)
+- [Technical Stack 🛠️](#technical-stack-)
+- [Installation 🚀](#installation-)
+- [Development 💻](#development-)
+- [Game Statistics 📈](#game-statistics-)
+- [Achievements 🏆](#achievements-)
+- [Contributing 🤝](#contributing-)
+- [License 📄](#license-)
+- [Acknowledgments 🙏](#acknowledgments-)
+
+<!-- portfolio-toc:end -->
+
+
 
 A modern, feature-rich implementation of the classic MineSweeper game built with Blazor WebAssembly and .NET 9.
 
